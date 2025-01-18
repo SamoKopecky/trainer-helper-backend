@@ -2,3 +2,14 @@ services:
   backend:
     build:
       context: backend
+    depends_on:
+      db:
+        condition: service_started
+  db:
+    image: postgres:17.2
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: alpharius
+    ports:
+      - 5432:5432
+

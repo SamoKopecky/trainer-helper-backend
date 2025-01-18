@@ -1,0 +1,3 @@
+- Add retry for db conn
+- Add migration shit
+
