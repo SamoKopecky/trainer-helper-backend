@@ -4,6 +4,23 @@ use postgres::{Client, NoTls};
 
 use crate::config::AppConfig;
 
-pub fn get_conn(config: AppConfig) -> Result<Client, Box<dyn Error>> {
-    Ok(Client::connect(&config.database.conn_string(), NoTls)?)
+pub struct PostgreClient {
+    pub client: Client,
+}
+
+impl PostgreClient {
+    fn get_tls_mode(config: &AppConfig) -> NoTls {
+        match config.env.as_str() {
+            // TODO: Make prod require TLS
+            "dev" => NoTls,
+            "prod" => NoTls,
+            _ => NoTls,
+        }
+    }
+
+    pub fn build(config: &AppConfig) -> Result<PostgreClient, Box<dyn Error>> {
+        Ok(PostgreClient {
+            client: Client::connect(&config.database.conn_string(), Self::get_tls_mode(&config))?,
+        })
+    }
 }

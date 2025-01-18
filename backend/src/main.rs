@@ -1,5 +1,5 @@
 use config::AppConfig;
-use db::get_conn;
+use db::PostgreClient;
 use std::{thread, time::Duration};
 
 pub mod config;
@@ -12,9 +12,8 @@ fn main() {
 }
 
 fn test_db(app_config: AppConfig) {
-    thread::sleep(Duration::new(2, 0));
-    let mut conn = get_conn(app_config).expect("Can't create conn");
-    for row in conn.query("SELECT 1", &[]).expect("cant execute") {
+    let mut pg = PostgreClient::build(&app_config).unwrap();
+    for row in pg.client.query("SELECT 1", &[]).expect("cant execute") {
         let value: i32 = row.get(0);
         println!("Value is: {value}");
     }

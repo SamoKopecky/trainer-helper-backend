@@ -41,8 +41,7 @@ impl AppConfig {
     pub fn build() -> Result<Self, ConfigError> {
         Config::builder()
             .add_source(Environment::with_prefix("GOACH"))
-            .build()
-            .expect("Required envs are not present")
+            .build()?
             .try_deserialize()
     }
 }

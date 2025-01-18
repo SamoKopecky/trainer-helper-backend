@@ -1,3 +1,5 @@
-- Add retry for db conn
+- Add config for db to docker compose
+	- add depedency on db in docker compose
 - Add migration shit
+	- Argument parser 
 
