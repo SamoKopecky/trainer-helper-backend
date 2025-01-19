@@ -2,7 +2,7 @@ use std::error::Error;
 
 use postgres::{Client, NoTls};
 
-use crate::config::AppConfig;
+use crate::settings::AppConfig;
 
 pub struct PostgreClient {
     pub client: Client,

@@ -1,9 +1,9 @@
-use config::AppConfig;
 use db::PostgreClient;
+use settings::AppConfig;
 use std::{thread, time::Duration};
 
-pub mod config;
 pub mod db;
+pub mod settings;
 
 fn main() {
     let app_config = AppConfig::build().expect("Error building configuration");
