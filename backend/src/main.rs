@@ -1,8 +1,13 @@
 use db::PostgreClient;
+use diesel::dsl::sql;
+use diesel::sql_types::Integer;
+use diesel::RunQueryDsl;
 use settings::AppConfig;
+use std::i32;
 use std::{thread, time::Duration};
 
 pub mod db;
+mod schema;
 pub mod settings;
 
 fn main() {
@@ -13,9 +18,12 @@ fn main() {
 
 fn test_db(app_config: AppConfig) {
     let mut pg = PostgreClient::build(&app_config).unwrap();
-    for row in pg.client.query("SELECT 1", &[]).expect("cant execute") {
-        let value: i32 = row.get(0);
-        println!("Value is: {value}");
+    let res: Vec<i32> = sql::<Integer>("SELECT 1;")
+        .load(&mut pg.client)
+        .expect("failed");
+
+    for row in res {
+        println!("Value is: {row}");
     }
 
     println!("Running ...");
