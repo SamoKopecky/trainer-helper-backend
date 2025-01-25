@@ -1,5 +1,5 @@
 -- Your SQL goes here
-CREATE TABLE timeslot (
+CREATE TABLE timeslots (
   id SERIAL PRIMARY KEY,
   trainer_id INTEGER NOT NULL,
   start TIMESTAMP NOT NULL,

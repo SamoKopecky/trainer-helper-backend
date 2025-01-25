@@ -10,13 +10,15 @@ pub struct Database {
     pub user: String,
     #[serde(default = "default_db_port")]
     pub port: u16,
+    #[serde(default = "default_db_name")]
+    pub name: String,
 }
 
 impl Database {
     pub fn conn_string(&self) -> String {
         format!(
-            "host={} user={} password={}",
-            self.host, self.user, self.password
+            "postgres://{}:{}@{}:{}/{}",
+            self.user, self.password, self.host, self.port, self.name
         )
     }
 }
@@ -28,6 +30,7 @@ impl Default for Database {
             password: default_db_password(),
             port: default_db_port(),
             user: default_db_user(),
+            name: default_db_name(),
         }
     }
 }
@@ -46,4 +49,8 @@ fn default_db_host() -> String {
 
 fn default_db_password() -> String {
     "alpharius".to_string()
+}
+
+fn default_db_name() -> String {
+    "goach".to_string()
 }

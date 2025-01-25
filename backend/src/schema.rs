@@ -1,7 +1,7 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    timeslot (id) {
+    timeslots (id) {
         id -> Int4,
         trainer_id -> Int4,
         start -> Timestamp,
