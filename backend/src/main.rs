@@ -1,7 +1,6 @@
-use self::models::*;
+use self::models::timeslot::*;
 use crud::timeslot::TimeslotCRUD;
 use db::PostgreClient;
-use diesel::prelude::*;
 use settings::AppConfig;
 use std::{
     thread,
@@ -18,25 +17,19 @@ fn main() {
     let app_config = AppConfig::build().expect("Error building configuration");
     let mut pg = PostgreClient::build(&app_config).unwrap();
 
-    insert_to_db(&mut pg);
-    // select_timeslots(&mut pg);
+    let new_timelots: Vec<NewTimeslot> = (1..10000)
+        .map(|i| NewTimeslot::new(i, SystemTime::now(), i * 60))
+        .collect();
 
-    for timeslot in TimeslotCRUD::get_by_id(&mut pg.client, 1) {
-        println!("{}", timeslot.id);
+    let inserted_count =
+        TimeslotCRUD::insert_many(&mut pg.client, new_timelots).expect("error inserting");
+
+    println!("Inserted {} rows", inserted_count);
+
+    if let Some(timeslot) = TimeslotCRUD::get_by_id(&mut pg.client, 1000).expect("error") {
+        println!("id is : {}", timeslot.id);
     }
 
     println!("Running ...");
     thread::sleep(Duration::MAX);
-}
-
-fn insert_to_db(pg: &mut PostgreClient) -> Timeslot {
-    use crate::schema::timeslots;
-
-    let new_timeslot = NewTimeslot::new(1, SystemTime::now(), 60);
-
-    diesel::insert_into(timeslots::table)
-        .values(&new_timeslot)
-        .returning(Timeslot::as_returning())
-        .get_result(&mut pg.client)
-        .expect("error while inserting")
 }
