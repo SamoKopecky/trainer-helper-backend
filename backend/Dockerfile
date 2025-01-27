@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN cargo build --release
+RUN cargo build --release --bins
 
 FROM rust:1.84.0-bookworm AS runner
 
@@ -12,7 +12,7 @@ RUN apt update -y && apt install -y netcat-traditional
 
 WORKDIR /app
 
-COPY --from=builder /app/target/release/backend  /app
+COPY --from=builder /app/target/release/app /app
 COPY wait-for.sh /app/wait-for.sh
 
 CMD [ "/app/backend" ]

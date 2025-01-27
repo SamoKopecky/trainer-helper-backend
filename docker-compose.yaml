@@ -14,7 +14,7 @@ services:
       - -c
       - |
         ./wait-for.sh -t 10 db:5432 -- echo "wait-for: Postgres DB is ready"
-        /app/backend
+        /app/app
   db:
     image: postgres:17.2
     environment:
