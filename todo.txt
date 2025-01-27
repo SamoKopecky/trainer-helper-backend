@@ -1,3 +1,8 @@
-- Add migration shit
-	- Argument parser 
-
+- change naive date time to utc date time
+- create crud
+- new method for timeslot like before
+- create db struct
+- figure out depedencies
+- read about async
+- use tokio for async everywhere
+- find out what is in migration cargo.toml

@@ -1,44 +1,41 @@
-use self::models::timeslot::*;
-use axum::{routing::get, Router};
-use crud::timeslot::TimeslotCRUD;
-use db::PostgreClient;
+use entity::prelude::*;
+use entity::timeslot;
+use sea_orm::{sqlx::types::chrono::Local, ActiveValue::NotSet, EntityTrait, Set};
 use settings::AppConfig;
-use std::{
-    thread,
-    time::{Duration, SystemTime},
-};
 
-pub mod crud;
-mod db;
-pub mod models;
-pub mod schema;
 mod settings;
 
-// fn main() {
-//     let app_config = AppConfig::build().expect("Error building configuration");
-//     let mut pg = PostgreClient::build(&app_config).unwrap();
+// #[tokio::main]
+// async fn main() {
+//     let app = Router::new().route("/", get(|| async { "Hello, World!" }));
 //
-//     let new_timelots: Vec<NewTimeslot> = (1..10000)
-//         .map(|i| NewTimeslot::new(i, SystemTime::now(), i * 60))
-//         .collect();
-//
-//     let inserted_count =
-//         TimeslotCRUD::insert_many(&mut pg.client, new_timelots).expect("error inserting");
-//
-//     println!("Inserted {} rows", inserted_count);
-//
-//     if let Some(timeslot) = TimeslotCRUD::get_by_id(&mut pg.client, 1000).expect("error") {
-//         println!("id is : {}", timeslot.id);
-//     }
-//
-//     println!("Running ...");
-//     thread::sleep(Duration::MAX);
+//     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+//     axum::serve(listener, app).await.unwrap();
 // }
 
 #[tokio::main]
 async fn main() {
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let app_config = AppConfig::build().expect("Error building configuration");
+    let connection = sea_orm::Database::connect(app_config.database.conn_string())
+        .await
+        .unwrap();
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    let chrono_now = Local::now().naive_local();
+    let model: timeslot::ActiveModel = timeslot::ActiveModel {
+        id: NotSet,
+        trainer_id: Set(1),
+        start: Set(chrono_now),
+        duration: Set(601),
+        updated_at: Set(chrono_now),
+        created_at: Set(chrono_now),
+        user_id: Set(Some(1)),
+    }
+    .into();
+
+    let timeslot = Timeslot::insert(model).exec(&connection).await;
+    println!("{:?}", timeslot);
+    println!(
+        "{:?}",
+        timeslot::Entity::find_by_id(1).one(&connection).await
+    );
 }
