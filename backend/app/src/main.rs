@@ -1,8 +1,11 @@
+use db::Db;
 use entity::prelude::*;
 use entity::timeslot;
-use sea_orm::{sqlx::types::chrono::Local, ActiveValue::NotSet, EntityTrait, Set};
+use sea_orm::sqlx::types::chrono::Utc;
+use sea_orm::{sqlx::types::chrono::Local, EntityTrait};
 use settings::AppConfig;
 
+mod db;
 mod settings;
 
 // #[tokio::main]
@@ -16,26 +19,11 @@ mod settings;
 #[tokio::main]
 async fn main() {
     let app_config = AppConfig::build().expect("Error building configuration");
-    let connection = sea_orm::Database::connect(app_config.database.conn_string())
-        .await
-        .unwrap();
+    let db = Db::build(&app_config).await.unwrap();
 
-    let chrono_now = Local::now().naive_local();
-    let model: timeslot::ActiveModel = timeslot::ActiveModel {
-        id: NotSet,
-        trainer_id: Set(1),
-        start: Set(chrono_now),
-        duration: Set(601),
-        updated_at: Set(chrono_now),
-        created_at: Set(chrono_now),
-        user_id: Set(Some(1)),
-    }
-    .into();
-
-    let timeslot = Timeslot::insert(model).exec(&connection).await;
-    println!("{:?}", timeslot);
-    println!(
-        "{:?}",
-        timeslot::Entity::find_by_id(1).one(&connection).await
-    );
+    let naive_now = Utc::now().naive_local();
+    let model = Timeslot::build(1, naive_now, 103);
+    let result = Timeslot::insert(model).exec(&db.pool).await;
+    println!("{:?}", result);
+    println!("{:?}", timeslot::Entity::find_by_id(1).one(&db.pool).await);
 }
