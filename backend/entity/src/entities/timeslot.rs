@@ -1,10 +1,4 @@
-use std::time::Duration;
-
-use sea_orm::{
-    entity::prelude::*,
-    sqlx::types::chrono::{Local, Utc},
-    Set,
-};
+use sea_orm::{entity::prelude::*, sqlx::types::chrono::Utc, Set};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "timeslot")]
