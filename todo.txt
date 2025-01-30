@@ -1,3 +1,4 @@
 - change naive date time to utc date time
 - read about async
 - find out what is in migration cargo.toml
+- Add indexes for user_id, trainer_id and start

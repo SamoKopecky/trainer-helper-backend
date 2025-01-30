@@ -4,7 +4,6 @@ use db::Db;
 use entity::timeslot;
 use sea_orm::entity::prelude::*;
 use sea_orm::sqlx::types::chrono::Utc;
-use settings::AppConfig;
 
 use chrono::prelude::*;
 use entity::prelude::*;
@@ -16,7 +15,7 @@ mod settings;
 
 #[tokio::main]
 async fn main() {
-    let app = Api::build();
+    let app = Api::build().await;
     // test_db().await;
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
@@ -24,8 +23,7 @@ async fn main() {
 }
 
 async fn test_db() {
-    let app_config = AppConfig::build().expect("Error building configuration");
-    let db = Db::build(&app_config).await.unwrap();
+    let db = Db::build().await.unwrap();
 
     let naive_now = Utc::now().naive_local();
     let model = Timeslot::build(1, naive_now, 103);

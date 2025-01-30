@@ -1,6 +1,7 @@
 use sea_orm::{entity::prelude::*, sqlx::types::chrono::Utc, Set};
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "timeslot")]
 pub struct Model {
     #[sea_orm(primary_key)]
@@ -8,7 +9,9 @@ pub struct Model {
     pub trainer_id: i32,
     pub start: DateTime,
     pub duration: i32,
+    #[serde(skip_serializing)]
     pub updated_at: DateTime,
+    #[serde(skip_serializing)]
     pub created_at: DateTime,
     pub user_id: Option<i32>,
 }

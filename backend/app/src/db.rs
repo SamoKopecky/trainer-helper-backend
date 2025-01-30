@@ -9,9 +9,17 @@ pub struct Db {
 }
 
 impl Db {
-    pub async fn build(config: &AppConfig) -> Result<Db, Box<dyn Error>> {
+    pub async fn build() -> Result<Db, Box<dyn Error>> {
+        let app_config = AppConfig::build().expect("Error building configuration");
         Ok(Db {
-            pool: Database::connect(config.database.conn_string()).await?,
+            pool: Database::connect(app_config.database.conn_string()).await?,
         })
+    }
+}
+
+impl Clone for Db {
+    fn clone(&self) -> Self {
+        // TODO: Implement this correctly
+        self.to_owned()
     }
 }

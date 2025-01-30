@@ -1,6 +1,5 @@
 use entity::timeslot;
 use sea_orm::entity::prelude::*;
-use sea_orm::{prelude::DateTime, EntityTrait, QueryFilter};
 
 pub struct CRUDTimeslot;
 
