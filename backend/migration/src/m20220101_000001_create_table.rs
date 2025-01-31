@@ -24,20 +24,20 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Timeslot::UpdatedAt).date_time().not_null())
                     .col(ColumnDef::new(Timeslot::CreatedAt).date_time().not_null())
                     .col(ColumnDef::new(Timeslot::UserId).integer().null())
-                    .take(),
+                    .to_owned(),
             )
             .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(Timeslot::Table).take())
+            .drop_table(Table::drop().table(Timeslot::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-enum Timeslot {
+pub enum Timeslot {
     Table,
     Id,
     TrainerId,
