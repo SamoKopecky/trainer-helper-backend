@@ -19,7 +19,7 @@ services:
     image: postgres:17.2
     environment:
       POSTGRES_USER: root
-      POSTGRES_DB: goach
+      POSTGRES_DB: trainer_helper
       POSTGRES_PASSWORD: alpharius
     ports:
       - 5432:5432

@@ -52,5 +52,5 @@ fn default_db_password() -> String {
 }
 
 fn default_db_name() -> String {
-    "goach".to_string()
+    "trainer_helper".to_string()
 }

@@ -1,4 +1,4 @@
-# Goach
+# Trainer helper
 
 Short info
 
