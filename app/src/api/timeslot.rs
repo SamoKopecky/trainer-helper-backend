@@ -7,7 +7,7 @@ use chrono::NaiveDateTime;
 use sea_orm::DatabaseConnection;
 use serde::Deserialize;
 use serde_json::{json, to_value, Value};
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::CorsLayer;
 
 use crate::{crud::timeslot::CRUDTimeslot, db::Db};
 
