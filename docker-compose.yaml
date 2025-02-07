@@ -5,7 +5,9 @@ services:
       APP_DATABASE_HOST: "db"
       APP_DATABASE_PASSWORD: "alpharius"
     build:
-      context: backend
+      context: .
+    ports:
+      - '3000:3000'
     depends_on:
       db:
         condition: service_started

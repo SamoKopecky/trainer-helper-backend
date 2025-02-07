@@ -4,10 +4,10 @@ use axum::{
     Json, Router,
 };
 use chrono::NaiveDateTime;
-use entity::timeslot::Model;
 use sea_orm::DatabaseConnection;
 use serde::Deserialize;
-use serde_json::{json, to_string, to_value, Value};
+use serde_json::{json, to_value, Value};
+use tower_http::cors::CorsLayer;
 
 use crate::{crud::timeslot::CRUDTimeslot, db::Db};
 
@@ -33,6 +33,8 @@ impl Api {
         Router::new()
             .route("/liveness", get(liveness))
             .route("/timeslots", post(timeslots))
+            // TODO: Fix this later
+            .layer(CorsLayer::permissive())
             .with_state(state)
     }
 }
