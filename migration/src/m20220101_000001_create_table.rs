@@ -1,4 +1,7 @@
-use sea_orm_migration::prelude::*;
+use sea_orm_migration::{
+    prelude::*,
+    schema::{date_time, integer, integer_null, pk_auto},
+};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -11,19 +14,13 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Timeslot::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Timeslot::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
-                    .col(ColumnDef::new(Timeslot::TrainerId).integer().not_null())
-                    .col(ColumnDef::new(Timeslot::Start).date_time().not_null())
-                    .col(ColumnDef::new(Timeslot::Duration).integer().not_null())
-                    .col(ColumnDef::new(Timeslot::UpdatedAt).date_time().not_null())
-                    .col(ColumnDef::new(Timeslot::CreatedAt).date_time().not_null())
-                    .col(ColumnDef::new(Timeslot::UserId).integer().null())
+                    .col(pk_auto(Timeslot::Id))
+                    .col(integer(Timeslot::TrainerId))
+                    .col(date_time(Timeslot::Start))
+                    .col(integer(Timeslot::Duration))
+                    .col(date_time(Timeslot::CreatedAt))
+                    .col(date_time(Timeslot::UpdatedAt))
+                    .col(integer_null(Timeslot::UserId))
                     .to_owned(),
             )
             .await
