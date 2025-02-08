@@ -31,14 +31,14 @@ async fn main() {
 
 async fn insert_seeds() {
     let db = Db::build().await.unwrap();
-    let timeslots = generate_sample_week().await;
+    let timeslots = generate_sample_week();
     let res = Timeslot::insert_many(timeslots)
         .exec(&db.pool)
         .await
         .unwrap();
     println!("Last inserted timeslot {}", res.last_insert_id);
 
-    let sets = generate_work_sets_in_timeslots(res.last_insert_id).await;
+    let sets = generate_work_sets_in_timeslots(res.last_insert_id);
     let res = WorkSet::insert_many(sets).exec(&db.pool).await.unwrap();
     println!("Last inserted set {}", res.last_insert_id);
 }
