@@ -1,8 +1,8 @@
-use api::timeslot::Api;
+use api::Api;
 use clap::{arg, command};
 use db::Db;
-use entity::{prelude::*, timeslot};
-use sea_orm::{prelude::*, TryIntoModel};
+use entity::prelude::*;
+use sea_orm::prelude::*;
 
 use seeder::{generate_sample_week, generate_work_sets_in_timeslots};
 

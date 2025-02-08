@@ -1,15 +1,11 @@
-use axum::{
-    extract::State,
-    routing::{get, post},
-    Json, Router,
-};
+use axum::{extract::State, Json};
 use chrono::NaiveDateTime;
-use sea_orm::DatabaseConnection;
 use serde::Deserialize;
-use serde_json::{json, to_value, Value};
-use tower_http::cors::CorsLayer;
+use serde_json::{to_value, Value};
 
-use crate::{crud::timeslot::CRUDTimeslot, db::Db};
+use crate::crud::timeslot::CRUDTimeslot;
+
+use super::AppState;
 
 #[derive(Deserialize, Debug)]
 pub struct TimeslotsRequest {
@@ -17,33 +13,7 @@ pub struct TimeslotsRequest {
     end_date: NaiveDateTime,
 }
 
-#[derive(Clone)]
-struct AppState {
-    db: DatabaseConnection,
-}
-
-pub struct Api;
-
-impl Api {
-    pub async fn build() -> Router {
-        let state = AppState {
-            db: Db::build().await.unwrap().pool,
-        };
-
-        Router::new()
-            .route("/liveness", get(liveness))
-            .route("/timeslots", post(timeslots))
-            // TODO: Fix this later
-            .layer(CorsLayer::permissive())
-            .with_state(state)
-    }
-}
-
-async fn liveness() -> Json<Value> {
-    Json(json!({"ready": "1"}))
-}
-
-async fn timeslots(
+pub async fn timeslots_api(
     State(state): State<AppState>,
     Json(request): Json<TimeslotsRequest>,
 ) -> Json<Value> {
