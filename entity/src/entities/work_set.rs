@@ -1,5 +1,17 @@
-use sea_orm::{entity::prelude::*, sqlx::types::chrono::Utc, Set};
+use sea_orm::prelude::*;
+use sea_orm::{sqlx::types::chrono::Utc, Set};
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize, Clone, Copy)]
+#[sea_orm(
+    rs_type = "String",
+    db_type = "String(StringLen::None)",
+    rename_all = "snake_case"
+)]
+pub enum SetType {
+    Squat,
+    Rdl,
+}
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "work_set")]
@@ -8,7 +20,7 @@ pub struct Model {
     pub id: i32,
     pub timeslot_id: i32,
     pub timeslot_index: i32,
-    pub set_type: String,
+    pub set_type: SetType,
     pub reps: i32,
     pub intensity: String,
     pub rpe: Option<i32>,
@@ -29,7 +41,7 @@ impl Entity {
     pub fn build(
         timeslot_id: i32,
         timeslot_index: i32,
-        set_type: String,
+        set_type: SetType,
         reps: i32,
         intensity: String,
         rpe: Option<i32>,
