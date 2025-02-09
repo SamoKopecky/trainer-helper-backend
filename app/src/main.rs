@@ -1,8 +1,9 @@
 use api::Api;
 use clap::{arg, command};
+use crud::work_set::CRUDWorkSet;
 use db::Db;
-use entity::prelude::*;
-use sea_orm::prelude::*;
+use entity::{prelude::*, work_set};
+use sea_orm::{prelude::*, Set};
 
 use seeder::{generate_sample_week, generate_work_sets_in_timeslots};
 
@@ -23,6 +24,8 @@ async fn main() {
         _ => {}
     }
 
+    test_update().await;
+
     let app = Api::build().await;
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     println!("Running API ...");
@@ -41,4 +44,16 @@ async fn insert_seeds() {
     let sets = generate_work_sets_in_timeslots(res.last_insert_id);
     let res = WorkSet::insert_many(sets).exec(&db.pool).await.unwrap();
     println!("Last inserted set {}", res.last_insert_id);
+}
+
+async fn test_update() {
+    let db = Db::build().await.unwrap();
+    let udpate_data = work_set::ActiveModel {
+        intensity: Set("122Kg".to_string()),
+        ..Default::default()
+    };
+    let res = CRUDWorkSet::update_one_by_id(&db.pool, 1, udpate_data)
+        .await
+        .unwrap();
+    println!("{:?}", res);
 }
