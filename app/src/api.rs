@@ -2,14 +2,14 @@ pub mod timeslot;
 pub mod work_set;
 
 use axum::{
-    routing::{get, post},
+    routing::{get, post, put},
     Json, Router,
 };
 use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
 use timeslot::timeslots_api;
-use tower_http::cors::CorsLayer;
-use work_set::work_set_api;
+use tower_http::{cors::CorsLayer, trace::TraceLayer};
+use work_set::{work_set_post, work_set_update};
 
 use crate::db::Db;
 
@@ -29,9 +29,11 @@ impl Api {
         Router::new()
             .route("/liveness", get(liveness))
             .route("/timeslots", post(timeslots_api))
-            .route("/worksets", post(work_set_api))
+            .route("/worksets", post(work_set_post))
+            .route("/workset", put(work_set_update))
             // TODO: Fix this later
             .layer(CorsLayer::permissive())
+            .layer(TraceLayer::new_for_http())
             .with_state(state)
     }
 }

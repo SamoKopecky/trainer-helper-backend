@@ -1,11 +1,11 @@
 use api::Api;
 use clap::{arg, command};
-use crud::work_set::CRUDWorkSet;
 use db::Db;
-use entity::{prelude::*, work_set};
-use sea_orm::{prelude::*, Set};
+use entity::prelude::*;
+use sea_orm::prelude::*;
 
 use seeder::{generate_sample_week, generate_work_sets_in_timeslots};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod api;
 pub mod crud;
@@ -24,11 +24,24 @@ async fn main() {
         _ => {}
     }
 
-    test_update().await;
-
     let app = Api::build().await;
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     println!("Running API ...");
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::fmt::layer())
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                // axum logs rejections from built-in extractors with the `axum::rejection`
+                // target, at `TRACE` level. `axum::rejection=trace` enables showing those events
+                format!(
+                    "{}=debug,tower_http=debug,axum::rejection=trace",
+                    env!("CARGO_CRATE_NAME")
+                )
+                .into()
+            }),
+        )
+        .init();
+
     axum::serve(listener, app).await.unwrap();
 }
 
@@ -44,16 +57,4 @@ async fn insert_seeds() {
     let sets = generate_work_sets_in_timeslots(res.last_insert_id);
     let res = WorkSet::insert_many(sets).exec(&db.pool).await.unwrap();
     println!("Last inserted set {}", res.last_insert_id);
-}
-
-async fn test_update() {
-    let db = Db::build().await.unwrap();
-    let udpate_data = work_set::ActiveModel {
-        intensity: Set("122Kg".to_string()),
-        ..Default::default()
-    };
-    let res = CRUDWorkSet::update_one_by_id(&db.pool, 1, udpate_data)
-        .await
-        .unwrap();
-    println!("{:?}", res);
 }
