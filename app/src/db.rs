@@ -16,10 +16,3 @@ impl Db {
         })
     }
 }
-
-impl Clone for Db {
-    fn clone(&self) -> Self {
-        // TODO: Implement this correctly
-        self.to_owned()
-    }
-}
