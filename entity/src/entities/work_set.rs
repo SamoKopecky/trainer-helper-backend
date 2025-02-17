@@ -1,4 +1,4 @@
-use sea_orm::prelude::*;
+use sea_orm::{prelude::*, Unchanged};
 use sea_orm::{sqlx::types::chrono::Utc, Set};
 use serde::{Deserialize, Serialize};
 

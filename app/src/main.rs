@@ -5,6 +5,7 @@ use entity::prelude::*;
 use sea_orm::prelude::*;
 
 use seeder::{generate_sample_week, generate_work_sets_in_timeslots};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod api;
 pub mod crud;
@@ -26,6 +27,21 @@ async fn main() {
     let app = Api::build().await;
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     println!("Running API ...");
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::fmt::layer())
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                // axum logs rejections from built-in extractors with the `axum::rejection`
+                // target, at `TRACE` level. `axum::rejection=trace` enables showing those events
+                format!(
+                    "{}=debug,tower_http=debug,axum::rejection=trace",
+                    env!("CARGO_CRATE_NAME")
+                )
+                .into()
+            }),
+        )
+        .init();
+
     axum::serve(listener, app).await.unwrap();
 }
 
