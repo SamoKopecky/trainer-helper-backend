@@ -1,3 +1,4 @@
+pub mod exercise;
 pub mod timeslot;
 pub mod work_set;
 
@@ -5,6 +6,7 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
+use exercise::get_exercise;
 use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
 use timeslot::timeslots_api;
@@ -31,6 +33,7 @@ impl Api {
             .route("/timeslots", post(timeslots_api))
             // .route("/worksets", post(work_set_post))
             .route("/worksets", put(work_set_update))
+            .route("/exercises/{timeslot_id}", get(get_exercise))
             // TODO: Fix this later
             .layer(CorsLayer::permissive())
             .layer(TraceLayer::new_for_http())

@@ -27,8 +27,24 @@ pub struct Model {
     pub created_at: DateTime,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+#[derive(Copy, Clone, Debug, EnumIter)]
+pub enum Relation {
+    WorkSet,
+}
+
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Self::WorkSet => Entity::has_many(super::work_set::Entity).into(),
+        }
+    }
+}
+
+impl Related<super::work_set::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::WorkSet.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}
 
@@ -52,3 +68,4 @@ impl Entity {
         }
     }
 }
+

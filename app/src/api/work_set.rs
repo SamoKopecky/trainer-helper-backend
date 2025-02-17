@@ -5,17 +5,10 @@ use sea_orm::{
     DbErr, Set,
 };
 use serde::Deserialize;
-use serde_json::{to_value, Value};
 
 use crate::crud::work_set::CRUDWorkSet;
 
 use super::AppState;
-
-#[derive(Deserialize, Debug)]
-#[serde(deny_unknown_fields)]
-pub struct WorkSetPostRequest {
-    timeslot_id: i32,
-}
 
 #[derive(Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
@@ -25,14 +18,6 @@ pub struct WorkSetPutRequest {
     pub intensity: Option<String>,
     pub rpe: Option<i32>,
 }
-
-// pub async fn work_set_post(
-//     State(state): State<AppState>,
-//     Json(_request): Json<WorkSetPostRequest>,
-// ) -> Json<Value> {
-//     let work_sets = CRUDWorkSet::get_by_timeslot_id(&state.db).await.unwrap();
-//     Json(to_value(work_sets).unwrap())
-// }
 
 fn active<T>(value: Option<T>) -> ActiveValue<T>
 where
