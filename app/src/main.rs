@@ -54,7 +54,7 @@ async fn insert_seeds() {
         .unwrap();
     println!("Last inserted timeslot {}", res.last_insert_id);
 
-    let sets = generate_work_sets_in_timeslots(res.last_insert_id);
+    let sets = generate_work_sets_in_timeslots();
     let res = WorkSet::insert_many(sets).exec(&db.pool).await.unwrap();
     println!("Last inserted set {}", res.last_insert_id);
 }

@@ -24,17 +24,13 @@ pub struct WorkSetPutRequest {
     pub reps: Option<i32>,
     pub intensity: Option<String>,
     pub rpe: Option<i32>,
-    pub tempo: Option<String>,
-    pub note: Option<String>,
 }
 
 pub async fn work_set_post(
     State(state): State<AppState>,
-    Json(request): Json<WorkSetPostRequest>,
+    Json(_request): Json<WorkSetPostRequest>,
 ) -> Json<Value> {
-    let work_sets = CRUDWorkSet::get_by_timeslot_id(&state.db, request.timeslot_id)
-        .await
-        .unwrap();
+    let work_sets = CRUDWorkSet::get_by_timeslot_id(&state.db).await.unwrap();
     Json(to_value(work_sets).unwrap())
 }
 
@@ -53,8 +49,6 @@ pub async fn work_set_update(
         reps: active(request.reps),
         intensity: active(request.intensity),
         rpe: active(request.rpe.map(Some)),
-        tempo: active(request.tempo.map(Some)),
-        note: active(request.note.map(Some)),
         ..Default::default()
     };
 
