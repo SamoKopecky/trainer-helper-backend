@@ -9,7 +9,7 @@ use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
 use timeslot::timeslots_api;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
-use work_set::{work_set_post, work_set_update};
+use work_set::work_set_update;
 
 use crate::db::Db;
 
@@ -29,7 +29,7 @@ impl Api {
         Router::new()
             .route("/liveness", get(liveness))
             .route("/timeslots", post(timeslots_api))
-            .route("/worksets", post(work_set_post))
+            // .route("/worksets", post(work_set_post))
             .route("/worksets", put(work_set_update))
             // TODO: Fix this later
             .layer(CorsLayer::permissive())

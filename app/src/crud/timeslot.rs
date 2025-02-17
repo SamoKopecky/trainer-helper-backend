@@ -1,6 +1,8 @@
 use entity::timeslot;
 use sea_orm::entity::prelude::*;
 
+use super::ResultCRUD;
+
 pub struct CRUDTimeslot;
 
 impl CRUDTimeslot {
@@ -8,7 +10,7 @@ impl CRUDTimeslot {
         db_conn: &DatabaseConnection,
         start_date: DateTime,
         end_date: DateTime,
-    ) -> Result<Vec<timeslot::Model>, DbErr> {
+    ) -> ResultCRUD<Vec<timeslot::Model>> {
         timeslot::Entity::find()
             .filter(timeslot::Column::Start.between(start_date, end_date))
             .all(db_conn)

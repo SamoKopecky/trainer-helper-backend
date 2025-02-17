@@ -26,13 +26,13 @@ pub struct WorkSetPutRequest {
     pub rpe: Option<i32>,
 }
 
-pub async fn work_set_post(
-    State(state): State<AppState>,
-    Json(_request): Json<WorkSetPostRequest>,
-) -> Json<Value> {
-    let work_sets = CRUDWorkSet::get_by_timeslot_id(&state.db).await.unwrap();
-    Json(to_value(work_sets).unwrap())
-}
+// pub async fn work_set_post(
+//     State(state): State<AppState>,
+//     Json(_request): Json<WorkSetPostRequest>,
+// ) -> Json<Value> {
+//     let work_sets = CRUDWorkSet::get_by_timeslot_id(&state.db).await.unwrap();
+//     Json(to_value(work_sets).unwrap())
+// }
 
 fn active<T>(value: Option<T>) -> ActiveValue<T>
 where
@@ -52,7 +52,7 @@ pub async fn work_set_update(
         ..Default::default()
     };
 
-    match CRUDWorkSet::update_one_by_id(&state.db, request.id, update_model).await {
+    match CRUDWorkSet::update_by_id(&state.db, request.id, update_model).await {
         Ok(_) => StatusCode::NO_CONTENT,
         Err(e) => match e {
             DbErr::RecordNotUpdated => StatusCode::NOT_FOUND,
