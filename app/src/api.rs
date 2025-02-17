@@ -30,7 +30,7 @@ impl Api {
             .route("/liveness", get(liveness))
             .route("/timeslots", post(timeslots_api))
             .route("/worksets", post(work_set_post))
-            .route("/workset", put(work_set_update))
+            .route("/worksets", put(work_set_update))
             // TODO: Fix this later
             .layer(CorsLayer::permissive())
             .layer(TraceLayer::new_for_http())
