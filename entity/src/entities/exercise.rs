@@ -20,7 +20,7 @@ pub struct Model {
     pub timeslot_id: i32,
     pub group_id: i32,
     pub set_type: SetType,
-    pub note: String,
+    pub note: Option<String>,
     #[serde(skip_serializing)]
     pub updated_at: DateTime,
     #[serde(skip_serializing)]
@@ -33,7 +33,12 @@ pub enum Relation {}
 impl ActiveModelBehavior for ActiveModel {}
 
 impl Entity {
-    pub fn build(timeslot_id: i32, group_id: i32, set_type: SetType, note: String) -> ActiveModel {
+    pub fn build(
+        timeslot_id: i32,
+        group_id: i32,
+        set_type: SetType,
+        note: Option<String>,
+    ) -> ActiveModel {
         let naive_now = Utc::now().naive_local();
 
         ActiveModel {

@@ -20,6 +20,3 @@ clap =  { version = "4.5.28", features = ["cargo"]}
 tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
 
-# TODO: Deal with this later
-[patch.crates-io]
-sea-orm = { git = "htfps://github.com/iivvaannxx/sea-orm.git", branch = "insert-many-returning-vec" }

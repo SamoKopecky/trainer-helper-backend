@@ -23,13 +23,14 @@ pub enum Relation {}
 impl ActiveModelBehavior for ActiveModel {}
 
 impl Entity {
-    pub fn build(reps: i32, intensity: String, rpe: Option<i32>) -> ActiveModel {
+    pub fn build(reps: i32, intensity: String, exercise_id: i32, rpe: Option<i32>) -> ActiveModel {
         let naive_now = Utc::now().naive_local();
 
         ActiveModel {
             reps: Set(reps),
             intensity: Set(intensity),
             rpe: Set(rpe),
+            exercise_id: Set(exercise_id),
             created_at: Set(naive_now),
             updated_at: Set(naive_now),
             ..Default::default()

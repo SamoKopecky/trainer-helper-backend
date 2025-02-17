@@ -15,7 +15,7 @@ impl MigrationTrait for Migration {
                     .col(integer(Exercise::TimeslotId))
                     .col(integer(Exercise::GroupId))
                     .col(string(Exercise::SetType))
-                    .col(string(Exercise::Note))
+                    .col(string_null(Exercise::Note))
                     .col(date_time(Exercise::CreatedAt))
                     .col(date_time(Exercise::UpdatedAt))
                     .to_owned(),

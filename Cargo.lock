@@ -2406,7 +2406,7 @@ dependencies = [
 [[package]]
 name = "sea-orm"
 version = "1.1.0"
-source = "git+https://github.com/iivvaannxx/sea-orm.git?branch=insert-many-returning-vec#a9127556be75b2e575bdc1d1682c9232f5dca38a"
+source = "git+htfps://github.com/iivvaannxx/sea-orm.git?branch=insert-many-returning-vec#a9127556be75b2e575bdc1d1682c9232f5dca38a"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -2450,7 +2450,7 @@ dependencies = [
 [[package]]
 name = "sea-orm-macros"
 version = "1.1.0"
-source = "git+https://github.com/iivvaannxx/sea-orm.git?branch=insert-many-returning-vec#a9127556be75b2e575bdc1d1682c9232f5dca38a"
+source = "git+htfps://github.com/iivvaannxx/sea-orm.git?branch=insert-many-returning-vec#a9127556be75b2e575bdc1d1682c9232f5dca38a"
 dependencies = [
  "heck 0.4.1",
  "proc-macro2",
