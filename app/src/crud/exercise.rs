@@ -1,12 +1,26 @@
 use entity::{exercise, work_set};
 use sea_orm::entity::prelude::*;
-use sea_orm::{DatabaseBackend, DatabaseConnection, DbErr, QueryTrait};
+use sea_orm::{DatabaseConnection, DbErr, FromQueryResult, Iterable, JoinType, QuerySelect};
+use serde::{Deserialize, Serialize};
 
 use super::ResultCRUD;
 
 pub struct CRUDExercise;
 
-type All = Vec<(exercise::Model, Option<work_set::Model>)>;
+// TODO: Move to a better place
+#[derive(FromQueryResult, Serialize, Deserialize)]
+pub struct ExerciseWorkSets {
+    pub exercise_id: i32,
+    pub timeslot_id: i32,
+    pub work_set_id: i32,
+    pub group_id: i32,
+    pub set_type: String,
+    pub intensity: String,
+    pub rpe: Option<i32>,
+    pub reps: i32,
+    pub note: Option<String>,
+    pub work_set_count: Option<i32>,
+}
 
 impl CRUDExercise {
     pub async fn create(
@@ -19,18 +33,22 @@ impl CRUDExercise {
     pub async fn get_by_timeslot_id(
         db_conn: &DatabaseConnection,
         timeslot_id: i32,
-    ) -> ResultCRUD<All> {
-        // TODO: Possible imporvment use data-loader in sea orm
-        let test = exercise::Entity::find()
+    ) -> ResultCRUD<Vec<ExerciseWorkSets>> {
+        let query = exercise::Entity::find()
             .filter(exercise::Column::TimeslotId.eq(timeslot_id))
-            .find_also_related(work_set::Entity)
-            .build(DatabaseBackend::Postgres)
-            .to_string();
-        println!("{}", test);
-        exercise::Entity::find()
-            .filter(exercise::Column::TimeslotId.eq(timeslot_id))
-            .find_also_related(work_set::Entity)
-            .all(db_conn)
-            .await
+            .join(JoinType::Join, exercise::Relation::WorkSet.def())
+            .select_only()
+            .columns(exercise::Column::iter().filter(|col| match col {
+                exercise::Column::Id => false,
+                _ => true,
+            }))
+            .columns(work_set::Column::iter().filter(|col| match col {
+                work_set::Column::Id => false,
+                _ => true,
+            }))
+            .column_as(work_set::Column::Id, "work_set_id")
+            .column_as(exercise::Column::Id, "exercise_id");
+
+        query.into_model().all(db_conn).await
     }
 }

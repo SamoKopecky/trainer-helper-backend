@@ -15,6 +15,7 @@ use work_set::work_set_update;
 
 use crate::db::Db;
 
+// TODO: Make endpoints retrun a proper type not just json
 #[derive(Clone)]
 pub struct AppState {
     db: DatabaseConnection,
