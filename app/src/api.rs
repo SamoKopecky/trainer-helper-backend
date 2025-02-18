@@ -32,7 +32,6 @@ impl Api {
         Router::new()
             .route("/liveness", get(liveness))
             .route("/timeslots", post(timeslots_api))
-            // .route("/worksets", post(work_set_post))
             .route("/worksets", put(work_set_update))
             .route("/exercises/{timeslot_id}", get(get_exercise))
             // TODO: Fix this later

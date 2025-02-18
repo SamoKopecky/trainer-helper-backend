@@ -1,6 +1,9 @@
+use entity::exercise::SetType;
 use entity::{exercise, work_set};
 use sea_orm::entity::prelude::*;
-use sea_orm::{DatabaseConnection, DbErr, FromQueryResult, Iterable, JoinType, QuerySelect};
+use sea_orm::{
+    DatabaseConnection, DbErr, FromQueryResult, Iterable, JoinType, QueryOrder, QuerySelect,
+};
 use serde::{Deserialize, Serialize};
 
 use super::ResultCRUD;
@@ -14,7 +17,7 @@ pub struct ExerciseWorkSets {
     pub timeslot_id: i32,
     pub work_set_id: i32,
     pub group_id: i32,
-    pub set_type: String,
+    pub set_type: SetType,
     pub intensity: String,
     pub rpe: Option<i32>,
     pub reps: i32,
@@ -47,7 +50,8 @@ impl CRUDExercise {
                 _ => true,
             }))
             .column_as(work_set::Column::Id, "work_set_id")
-            .column_as(exercise::Column::Id, "exercise_id");
+            .column_as(exercise::Column::Id, "exercise_id")
+            .order_by(exercise::Column::GroupId, sea_orm::Order::Asc);
 
         query.into_model().all(db_conn).await
     }
