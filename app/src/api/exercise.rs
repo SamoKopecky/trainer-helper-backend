@@ -8,12 +8,12 @@ use entity::exercise::SetType;
 use serde::{Deserialize, Serialize};
 use serde_json::{to_value, Value};
 
-use crate::crud::exercise::{CRUDExercise, ExerciseWorkSets};
+use crate::crud::exercise::CRUDExercise;
 
 use super::AppState;
 
 // TODO: Move models somewhere else, also rename many things to make sense
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct ApiExerciseWorkSet {
     pub work_set_id: i32,
     pub reps: i32,
@@ -23,7 +23,7 @@ struct ApiExerciseWorkSet {
 }
 
 // TODO: Add ordering for work sets vector or maybe just sort them by updated_at
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct ApiExercise {
     pub exercise_id: i32,
     pub group_id: i32,
@@ -67,5 +67,7 @@ pub async fn get_exercise(
             });
     });
 
-    Json(to_value(res.values().collect::<Vec<&ApiExercise>>()).unwrap())
+    let mut res_values: Vec<ApiExercise> = res.into_values().collect();
+    res_values.sort_by_key(|k| k.group_id);
+    Json(to_value(res_values).unwrap())
 }

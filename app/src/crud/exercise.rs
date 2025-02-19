@@ -11,7 +11,7 @@ use super::ResultCRUD;
 pub struct CRUDExercise;
 
 // TODO: Move to a better place
-#[derive(FromQueryResult, Serialize, Deserialize)]
+#[derive(FromQueryResult, Serialize, Deserialize, Debug)]
 pub struct ExerciseWorkSets {
     pub exercise_id: i32,
     pub timeslot_id: i32,

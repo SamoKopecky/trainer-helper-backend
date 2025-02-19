@@ -7,4 +7,4 @@ members = [
 resolver = "1"
 
 [patch.crates-io]
-sea-orm = { git = "htfps://github.com/iivvaannxx/sea-orm.git", branch = "insert-many-returning-vec" }
+sea-orm = { git = "https://github.com/iivvaannxx/sea-orm.git", branch = "insert-many-returning-vec" }
