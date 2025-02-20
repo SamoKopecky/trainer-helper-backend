@@ -51,8 +51,7 @@ impl CRUDExercise {
                 _ => true,
             }))
             .column_as(work_set::Column::Id, "work_set_id")
-            .column_as(exercise::Column::Id, "exercise_id")
-            .order_by(exercise::Column::GroupId, sea_orm::Order::Asc);
+            .column_as(exercise::Column::Id, "exercise_id");
 
         query.into_model().all(db_conn).await
     }

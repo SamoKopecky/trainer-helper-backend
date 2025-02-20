@@ -77,7 +77,7 @@ pub async fn get_exercise(
     });
 
     let mut res_values: Vec<ApiExercise> = res.into_values().collect();
-    res_values.sort_by_key(|k| k.group_id);
+    res_values.sort_by_key(|k| (k.group_id, k.exercise_id));
     Json(to_value(res_values).unwrap())
 }
 
