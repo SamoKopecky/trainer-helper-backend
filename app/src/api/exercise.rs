@@ -2,15 +2,17 @@ use std::collections::HashMap;
 
 use axum::{
     extract::{Path, State},
+    http::StatusCode,
     Json,
 };
-use entity::exercise::SetType;
+use entity::exercise::{self, SetType};
+use sea_orm::DbErr;
 use serde::{Deserialize, Serialize};
 use serde_json::{to_value, Value};
 
 use crate::crud::exercise::CRUDExercise;
 
-use super::AppState;
+use super::{utils::active, AppState};
 
 // TODO: Move models somewhere else, also rename many things to make sense
 #[derive(Serialize, Deserialize, Debug)]
@@ -31,6 +33,13 @@ struct ApiExercise {
     pub set_type: SetType,
     pub note: Option<String>,
     pub work_sets: Vec<ApiExerciseWorkSet>,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(deny_unknown_fields)]
+pub struct ExercisePutRequest {
+    pub id: i32,
+    pub note: Option<String>,
 }
 
 pub async fn get_exercise(
@@ -70,4 +79,22 @@ pub async fn get_exercise(
     let mut res_values: Vec<ApiExercise> = res.into_values().collect();
     res_values.sort_by_key(|k| k.group_id);
     Json(to_value(res_values).unwrap())
+}
+
+pub async fn exercise_update(
+    State(state): State<AppState>,
+    Json(request): Json<ExercisePutRequest>,
+) -> StatusCode {
+    let update_model = exercise::ActiveModel {
+        note: active(request.note.map(Some)),
+        ..Default::default()
+    };
+
+    match CRUDExercise::update_by_id(&state.db, request.id, update_model).await {
+        Ok(_) => StatusCode::NO_CONTENT,
+        Err(e) => match e {
+            DbErr::RecordNotUpdated => StatusCode::NOT_FOUND,
+            _ => StatusCode::INTERNAL_SERVER_ERROR,
+        },
+    }
 }

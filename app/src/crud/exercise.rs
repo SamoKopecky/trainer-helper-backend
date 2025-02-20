@@ -1,8 +1,9 @@
+use chrono::Utc;
 use entity::exercise::SetType;
 use entity::{exercise, work_set};
 use sea_orm::entity::prelude::*;
 use sea_orm::{
-    DatabaseConnection, DbErr, FromQueryResult, Iterable, JoinType, QueryOrder, QuerySelect,
+    DatabaseConnection, DbErr, FromQueryResult, Iterable, JoinType, QueryOrder, QuerySelect, Set,
 };
 use serde::{Deserialize, Serialize};
 
@@ -54,5 +55,15 @@ impl CRUDExercise {
             .order_by(exercise::Column::GroupId, sea_orm::Order::Asc);
 
         query.into_model().all(db_conn).await
+    }
+
+    pub async fn update_by_id(
+        db_conn: &DatabaseConnection,
+        id: i32,
+        mut data: exercise::ActiveModel,
+    ) -> ResultCRUD<exercise::Model> {
+        data.id = Set(id);
+        data.updated_at = Set(Utc::now().naive_local());
+        data.update(db_conn).await
     }
 }
