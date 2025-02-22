@@ -3,16 +3,23 @@ pub mod timeslot;
 pub mod utils;
 pub mod work_set;
 
+/// Contains schemas for all API requests and response
+///
+/// Schema always ends with Response and Request to label them
+/// as api schemas, the only exception is that inner schemas
+/// don't need to be named this way
+pub mod schemas;
+
 use axum::{
     routing::{get, post, put},
     Json, Router,
 };
-use exercise::{exercise_update, get_exercise};
+use exercise::{exercis_get, exercise_put};
 use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
-use timeslot::timeslots_api;
+use timeslot::timeslot_post;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
-use work_set::work_set_update;
+use work_set::work_set_put;
 
 use crate::db::Db;
 
@@ -32,10 +39,10 @@ impl Api {
 
         Router::new()
             .route("/liveness", get(liveness))
-            .route("/timeslots", post(timeslots_api))
-            .route("/worksets", put(work_set_update))
-            .route("/exercises/{timeslot_id}", get(get_exercise))
-            .route("/exercises", put(exercise_update))
+            .route("/timeslot", post(timeslot_post))
+            .route("/workset", put(work_set_put))
+            .route("/exercise/{timeslot_id}", get(exercis_get))
+            .route("/exercise", put(exercise_put))
             // TODO: Fix this later
             .layer(CorsLayer::permissive())
             .layer(TraceLayer::new_for_http())
