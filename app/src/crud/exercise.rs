@@ -1,7 +1,7 @@
 use chrono::Utc;
 use entity::{exercise, work_set};
 use sea_orm::entity::prelude::*;
-use sea_orm::{DatabaseConnection, DbErr, Iterable, JoinType, QuerySelect, Set};
+use sea_orm::{DatabaseConnection, Iterable, JoinType, QuerySelect, Set};
 
 use super::models::exercise::ExerciseWorkSetModel;
 use super::ResultCRUD;
@@ -12,7 +12,7 @@ impl CRUDExercise {
     pub async fn create(
         db_conn: &DatabaseConnection,
         model: exercise::ActiveModel,
-    ) -> Result<exercise::Model, DbErr> {
+    ) -> ResultCRUD<exercise::Model> {
         model.insert(db_conn).await
     }
 

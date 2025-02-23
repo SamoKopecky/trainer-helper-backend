@@ -14,7 +14,7 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
-use exercise::{exercis_get, exercise_put};
+use exercise::{exercis_get, exercise_count_put, exercise_put};
 use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
 use timeslot::timeslot_post;
@@ -43,7 +43,8 @@ impl Api {
             .route("/workset", put(work_set_put))
             .route("/exercise/{timeslot_id}", get(exercis_get))
             .route("/exercise", put(exercise_put))
-            // TODO: Fix this later
+            .route("/exercise-count", put(exercise_count_put))
+            // TODO: Fix cors later
             .layer(CorsLayer::permissive())
             .layer(TraceLayer::new_for_http())
             .with_state(state)

@@ -1,4 +1,4 @@
-use entity::exercise::SetType;
+use entity::{exercise::SetType, work_set};
 use serde::{Deserialize, Serialize};
 
 use crate::crud::models::exercise::ExerciseWorkSetModel;
@@ -19,6 +19,18 @@ pub struct ExerciseGetResponse {
     pub set_type: SetType,
     pub note: Option<String>,
     pub work_sets: Vec<ExerciseWorkSet>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ExerciseCountPutResponse {
+    pub new_work_sets: Vec<work_set::Model>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ExerciseCountPutRequest {
+    pub id: i32,
+    pub work_set_count: i32,
+    pub work_set_template: ExerciseWorkSet,
 }
 
 #[derive(Deserialize, Debug)]
