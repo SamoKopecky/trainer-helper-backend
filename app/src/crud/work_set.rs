@@ -30,31 +30,11 @@ impl CRUDWorkSet {
         data.update(db_conn).await
     }
 
-    pub async fn get_work_set_count_by_exercise_id(
-        db_conn: &DatabaseConnection,
-        exercise_id: i32,
-    ) -> ResultCRUD<i32> {
-        let res = work_set::Entity::find()
-            .filter(work_set::Column::ExerciseId.eq(exercise_id))
-            .count(db_conn)
-            .await?;
-        Ok(res.try_into().expect("Can't convert u64 to i32"))
-    }
-
     fn get_ordered_by_exercise_id_query(exercise_id: i32) -> Select<work_set::Entity> {
         work_set::Entity::find()
             .filter(work_set::Column::ExerciseId.eq(exercise_id))
             // TODO: sort properly
             .order_by(work_set::Column::Id, Order::Asc)
-    }
-
-    pub async fn get_last_by_exercise_id(
-        db_conn: &DatabaseConnection,
-        exercise_id: i32,
-    ) -> ResultCRUD<Option<work_set::Model>> {
-        Self::get_ordered_by_exercise_id_query(exercise_id)
-            .one(db_conn)
-            .await
     }
 
     pub async fn get_many_ordered_ids(

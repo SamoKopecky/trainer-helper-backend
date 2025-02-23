@@ -21,16 +21,16 @@ pub struct ExerciseGetResponse {
     pub work_sets: Vec<ExerciseWorkSet>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ExerciseCountPutResponse {
-    pub new_work_sets: Vec<work_set::Model>,
-}
-
 #[derive(Deserialize, Debug)]
 pub struct ExerciseCountPutRequest {
     pub id: i32,
-    pub work_set_count: i32,
+    pub count: i32,
     pub work_set_template: ExerciseWorkSet,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ExerciseCountDeleteRequest {
+    pub work_set_ids: Vec<i32>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -48,6 +48,9 @@ impl ExerciseWorkSet {
             intensity: model.intensity.clone(),
             rpe: model.rpe,
         }
+    }
+    pub fn to_active_model(self, exercise_id: i32) -> work_set::ActiveModel {
+        work_set::Entity::build(self.reps, self.intensity, exercise_id, self.rpe)
     }
 }
 

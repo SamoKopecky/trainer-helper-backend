@@ -15,8 +15,8 @@ use crate::crud::{exercise::CRUDExercise, work_set::CRUDWorkSet};
 
 use super::{
     schemas::exercise::{
-        ExerciseCountPutRequest, ExerciseCountPutResponse, ExerciseGetResponse, ExercisePutRequest,
-        ExerciseWorkSet,
+        ExerciseCountDeleteRequest, ExerciseCountPutRequest, ExerciseGetResponse,
+        ExercisePutRequest, ExerciseWorkSet,
     },
     utils::{active, handle_crud_result},
     AppState,
@@ -61,47 +61,27 @@ pub async fn exercise_put(
 pub async fn exercise_count_put(
     State(state): State<AppState>,
     Json(request): Json<ExerciseCountPutRequest>,
-) -> Json<ExerciseCountPutResponse> {
-    let old_count = CRUDWorkSet::get_work_set_count_by_exercise_id(&state.db, request.id)
-        .await
-        .unwrap();
+) -> Json<Vec<work_set::Model>> {
+    let copy_model = request.work_set_template.to_active_model(request.id);
 
-    // TODO: Replace all unwraps with returning status code if its bad
-    match request.work_set_count.cmp(&old_count) {
-        std::cmp::Ordering::Greater => {
-            let last_copy = CRUDWorkSet::get_last_by_exercise_id(&state.db, request.id)
-                .await
-                .unwrap()
-                .expect("Exercise {} id doesn't have any work sets");
-            let create_count = request.work_set_count - old_count;
-            let models: Vec<work_set::ActiveModel> = (0..create_count)
-                .map(|_| {
-                    let mut clone = last_copy.clone().into_active_model();
-                    clone.id = NotSet;
-                    clone
-                })
-                .collect();
-            let created_models = CRUDWorkSet::create_many(&state.db, models).await.unwrap();
-            Json(ExerciseCountPutResponse {
-                new_work_sets: created_models,
-            })
-        }
-        std::cmp::Ordering::Less => {
-            let delete_count = old_count - request.work_set_count;
-            let ids_to_delete = CRUDWorkSet::get_many_ordered_ids(
-                &state.db,
-                request.id,
-                delete_count.try_into().unwrap(),
-            )
+    let models: Vec<work_set::ActiveModel> = (0..request.count)
+        .map(|_| {
+            let mut clone = copy_model.clone().into_active_model();
+            clone.id = NotSet;
+            clone
+        })
+        .collect();
+
+    Json(CRUDWorkSet::create_many(&state.db, models).await.unwrap())
+}
+
+pub async fn exercise_count_delete(
+    State(state): State<AppState>,
+    Json(request): Json<ExerciseCountDeleteRequest>,
+) -> Json<u64> {
+    Json(
+        CRUDWorkSet::delete_many_by_ids(&state.db, request.work_set_ids)
             .await
-            .unwrap();
-            let _ = CRUDWorkSet::delete_many_by_ids(&state.db, ids_to_delete).await;
-            Json(ExerciseCountPutResponse {
-                new_work_sets: Vec::new(),
-            })
-        }
-        std::cmp::Ordering::Equal => Json(ExerciseCountPutResponse {
-            new_work_sets: Vec::new(),
-        }),
-    }
+            .unwrap(),
+    )
 }

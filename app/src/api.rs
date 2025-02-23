@@ -11,10 +11,10 @@ pub mod work_set;
 pub mod schemas;
 
 use axum::{
-    routing::{get, post, put},
+    routing::{delete, get, post, put},
     Json, Router,
 };
-use exercise::{exercis_get, exercise_count_put, exercise_put};
+use exercise::{exercis_get, exercise_count_delete, exercise_count_put, exercise_put};
 use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
 use timeslot::timeslot_post;
@@ -44,6 +44,7 @@ impl Api {
             .route("/exercise/{timeslot_id}", get(exercis_get))
             .route("/exercise", put(exercise_put))
             .route("/exercise-count", put(exercise_count_put))
+            .route("/exercise-count", delete(exercise_count_delete))
             // TODO: Fix cors later
             .layer(CorsLayer::permissive())
             .layer(TraceLayer::new_for_http())
