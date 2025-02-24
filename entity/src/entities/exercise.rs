@@ -10,6 +10,8 @@ use serde::{Deserialize, Serialize};
 pub enum SetType {
     Squat,
     Rdl,
+    Deadlift,
+    None,
 }
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
@@ -68,4 +70,3 @@ impl Entity {
         }
     }
 }
-

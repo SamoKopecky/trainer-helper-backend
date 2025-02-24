@@ -47,4 +47,20 @@ impl CRUDExercise {
         data.updated_at = Set(Utc::now().naive_local());
         data.update(db_conn).await
     }
+
+    pub async fn delete_by_group_and_timeslot_id(
+        db_conn: &DatabaseConnection,
+        timeslot_id: i32,
+        group_id: i32,
+    ) -> ResultCRUD<()> {
+        exercise::Entity::delete_many()
+            .filter(
+                exercise::Column::TimeslotId
+                    .eq(timeslot_id)
+                    .and(exercise::Column::GroupId.eq(group_id)),
+            )
+            .exec(db_conn)
+            .await?;
+        Ok(())
+    }
 }

@@ -1,4 +1,7 @@
-use entity::{exercise::SetType, work_set};
+use entity::{
+    exercise::{self, SetType},
+    work_set,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::crud::models::exercise::ExerciseWorkSetModel;
@@ -12,7 +15,7 @@ pub struct ExerciseWorkSet {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ExerciseGetResponse {
+pub struct ExerciseResponse {
     pub exercise_id: i32,
     pub group_id: i32,
     pub work_set_count: i32,
@@ -38,6 +41,13 @@ pub struct ExerciseCountDeleteRequest {
 pub struct ExercisePutRequest {
     pub id: i32,
     pub note: Option<String>,
+    pub set_type: Option<SetType>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ExercisePostDeleteRequest {
+    pub timeslot_id: i32,
+    pub group_id: i32,
 }
 
 impl ExerciseWorkSet {
@@ -54,15 +64,31 @@ impl ExerciseWorkSet {
     }
 }
 
-impl ExerciseGetResponse {
+impl ExerciseResponse {
     pub fn from_crud_model(model: &ExerciseWorkSetModel) -> Self {
-        ExerciseGetResponse {
+        ExerciseResponse {
             exercise_id: model.exercise_id,
             group_id: model.group_id,
             note: model.note.clone(),
             set_type: model.set_type,
             work_set_count: 1,
             work_sets: vec![ExerciseWorkSet::from_crud_model(model)],
+        }
+    }
+
+    pub fn from_crud_models(work_set: &work_set::Model, exercise: &exercise::Model) -> Self {
+        ExerciseResponse {
+            set_type: exercise.set_type,
+            group_id: exercise.group_id,
+            note: exercise.note.clone(),
+            exercise_id: exercise.id,
+            work_set_count: 1,
+            work_sets: vec![ExerciseWorkSet {
+                rpe: work_set.rpe,
+                reps: work_set.reps,
+                intensity: work_set.intensity.clone(),
+                work_set_id: work_set.id,
+            }],
         }
     }
 }
