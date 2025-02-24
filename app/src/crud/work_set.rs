@@ -1,28 +1,64 @@
 use chrono::Utc;
+use entity::prelude::*;
 use entity::work_set;
-use sea_orm::{entity::prelude::*, QueryOrder, Set};
+use sea_orm::Order;
+use sea_orm::QueryOrder;
+use sea_orm::QuerySelect;
+use sea_orm::{entity::prelude::*, Set};
+
+use super::ResultCRUD;
 
 pub struct CRUDWorkSet;
 
 impl CRUDWorkSet {
-    pub async fn get_by_timeslot_id(
+    pub async fn create_many(
         db_conn: &DatabaseConnection,
-        timeslot_id: i32,
-    ) -> Result<Vec<work_set::Model>, DbErr> {
+        models: Vec<work_set::ActiveModel>,
+    ) -> ResultCRUD<Vec<work_set::Model>> {
+        WorkSet::insert_many(models)
+            .exec_with_returning_many(db_conn)
+            .await
+    }
+
+    pub async fn update_by_id(
+        db_conn: &DatabaseConnection,
+        id: i32,
+        mut data: work_set::ActiveModel,
+    ) -> ResultCRUD<work_set::Model> {
+        data.id = Set(id);
+        data.updated_at = Set(Utc::now().naive_local());
+        data.update(db_conn).await
+    }
+
+    fn get_ordered_by_exercise_id_query(exercise_id: i32) -> Select<work_set::Entity> {
         work_set::Entity::find()
-            .filter(work_set::Column::TimeslotId.eq(timeslot_id))
-            .order_by_asc(work_set::Column::TimeslotIndex)
+            .filter(work_set::Column::ExerciseId.eq(exercise_id))
+            // TODO: sort properly
+            .order_by(work_set::Column::Id, Order::Asc)
+    }
+
+    pub async fn get_many_ordered_ids(
+        db_conn: &DatabaseConnection,
+        exercise_id: i32,
+        limit: u64,
+    ) -> ResultCRUD<Vec<i32>> {
+        Self::get_ordered_by_exercise_id_query(exercise_id)
+            .limit(limit)
+            .select_only()
+            .column(work_set::Column::Id)
+            .into_tuple()
             .all(db_conn)
             .await
     }
 
-    pub async fn update_one_by_id(
+    pub async fn delete_many_by_ids(
         db_conn: &DatabaseConnection,
-        id: i32,
-        mut data: work_set::ActiveModel,
-    ) -> Result<work_set::Model, DbErr> {
-        data.id = Set(id);
-        data.updated_at = Set(Utc::now().naive_local());
-        data.update(db_conn).await
+        ids: Vec<i32>,
+    ) -> ResultCRUD<u64> {
+        Ok(WorkSet::delete_many()
+            .filter(work_set::Column::Id.is_in(ids))
+            .exec(db_conn)
+            .await?
+            .rows_affected)
     }
 }

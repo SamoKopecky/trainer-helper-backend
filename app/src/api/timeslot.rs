@@ -1,21 +1,13 @@
 use axum::{extract::State, Json};
-use chrono::NaiveDateTime;
-use serde::Deserialize;
 use serde_json::{to_value, Value};
 
 use crate::crud::timeslot::CRUDTimeslot;
 
-use super::AppState;
+use super::{schemas::timeslot::TimeslotPutRequest, AppState};
 
-#[derive(Deserialize, Debug)]
-pub struct TimeslotsRequest {
-    start_date: NaiveDateTime,
-    end_date: NaiveDateTime,
-}
-
-pub async fn timeslots_api(
+pub async fn timeslot_post(
     State(state): State<AppState>,
-    Json(request): Json<TimeslotsRequest>,
+    Json(request): Json<TimeslotPutRequest>,
 ) -> Json<Value> {
     let timeslots =
         CRUDTimeslot::get_by_range_date(&state.db, request.start_date, request.end_date)

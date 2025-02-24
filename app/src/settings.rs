@@ -8,8 +8,8 @@ mod database;
 pub struct AppConfig {
     #[serde(default)]
     pub database: Database,
-    #[serde(default = "default_env")]
-    pub env: String,
+    // #[serde(default = "default_env")]
+    // pub env: String,
 }
 
 impl AppConfig {
@@ -21,6 +21,6 @@ impl AppConfig {
     }
 }
 
-fn default_env() -> String {
-    "dev".to_string()
-}
+// fn default_env() -> String {
+//     "dev".to_string()
+// }
