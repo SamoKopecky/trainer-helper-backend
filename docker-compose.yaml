@@ -7,7 +7,7 @@ services:
     build:
       context: .
     ports:
-      - '3000:3000'
+      - '2001:2001'
     depends_on:
       db:
         condition: service_started

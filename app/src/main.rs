@@ -22,7 +22,7 @@ async fn main() {
     }
 
     let app = Api::build().await;
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:2001").await.unwrap();
     println!("Running API ...");
     tracing_subscriber::registry()
         .with(tracing_subscriber::fmt::layer())
