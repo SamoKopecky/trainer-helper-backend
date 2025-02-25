@@ -15,5 +15,6 @@ WORKDIR /app
 COPY --from=builder /app/target/release/app /app
 COPY wait-for.sh /app/wait-for.sh
 
+EXPOSE 2001
 CMD [ "/app/backend" ]
 
