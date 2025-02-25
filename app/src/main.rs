@@ -1,6 +1,7 @@
 use api::Api;
 use clap::{arg, command};
-
+use db::Db;
+use migration::{Migrator, MigratorTrait};
 use seeder::insert_seeds;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -20,6 +21,8 @@ async fn main() {
         Some(seed) if *seed == true => insert_seeds().await,
         _ => {}
     }
+    let db = Db::build().await.unwrap();
+    let _ = Migrator::up(&db.pool, None).await;
 
     let app = Api::build().await;
     let listener = tokio::net::TcpListener::bind("0.0.0.0:2001").await.unwrap();
