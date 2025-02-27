@@ -42,7 +42,12 @@ pub async fn exercis_get(
     });
 
     let mut res_values: Vec<ExerciseResponse> = res.into_values().collect();
-    res_values.sort_by_key(|k| (k.group_id, k.exercise_id));
+    res_values.iter_mut().for_each(|exercise| {
+        exercise
+            .work_sets
+            .sort_by_key(|work_set| work_set.work_set_id)
+    });
+    res_values.sort_by_key(|exercise| (exercise.group_id, exercise.exercise_id));
     Json(res_values)
 }
 
