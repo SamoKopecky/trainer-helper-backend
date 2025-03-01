@@ -9,6 +9,3 @@ up-db:
 run:
 	docker compose up db -d
 	cargo r -p app
-
-
-

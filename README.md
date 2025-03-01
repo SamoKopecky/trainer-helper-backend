@@ -10,7 +10,7 @@ Diesel CLI is required, install it using [this](https://diesel.rs/guides/getting
 
 ```shell
 # Generate a migration
-diesel migration generate ... 
+diesel migration generate ...
 # Run a migration
 diesel migration run
 # Redo a migration

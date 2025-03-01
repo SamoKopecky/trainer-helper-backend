@@ -25,4 +25,3 @@ services:
       POSTGRES_PASSWORD: alpharius
     ports:
       - 5432:5432
-
