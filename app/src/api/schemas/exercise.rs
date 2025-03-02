@@ -42,10 +42,17 @@ pub struct ExercisePutRequest {
     pub id: i32,
     pub note: Option<String>,
     pub set_type: Option<SetType>,
+    pub group_id: Option<i32>,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct ExercisePostDeleteRequest {
+pub struct ExerciseDeleteRequest {
+    pub timeslot_id: i32,
+    pub exercise_id: i32,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ExercisePostRequest {
     pub timeslot_id: i32,
     pub group_id: i32,
 }

@@ -48,17 +48,21 @@ impl CRUDExercise {
         data.update(db_conn).await
     }
 
-    pub async fn delete_by_group_and_timeslot_id(
+    pub async fn delete_by_exercise_and_timeslot_id(
         db_conn: &DatabaseConnection,
         timeslot_id: i32,
-        group_id: i32,
+        exercise_id: i32,
     ) -> ResultCRUD<()> {
         exercise::Entity::delete_many()
             .filter(
                 exercise::Column::TimeslotId
                     .eq(timeslot_id)
-                    .and(exercise::Column::GroupId.eq(group_id)),
+                    .and(exercise::Column::Id.eq(exercise_id)),
             )
+            .exec(db_conn)
+            .await?;
+        work_set::Entity::delete_many()
+            .filter(work_set::Column::ExerciseId.eq(exercise_id))
             .exec(db_conn)
             .await?;
         Ok(())

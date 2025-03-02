@@ -15,8 +15,8 @@ use crate::crud::{exercise::CRUDExercise, work_set::CRUDWorkSet};
 
 use super::{
     schemas::exercise::{
-        ExerciseCountDeleteRequest, ExerciseCountPutRequest, ExercisePostDeleteRequest,
-        ExercisePutRequest, ExerciseResponse, ExerciseWorkSet,
+        ExerciseCountDeleteRequest, ExerciseCountPutRequest, ExerciseDeleteRequest,
+        ExercisePostRequest, ExercisePutRequest, ExerciseResponse, ExerciseWorkSet,
     },
     utils::{active, handle_crud_result},
     AppState,
@@ -53,7 +53,7 @@ pub async fn exercis_get(
 
 pub async fn exercise_post(
     State(state): State<AppState>,
-    Json(request): Json<ExercisePostDeleteRequest>,
+    Json(request): Json<ExercisePostRequest>,
 ) -> Json<ExerciseResponse> {
     let new_exercise = CRUDExercise::create(
         &state.db,
@@ -85,11 +85,15 @@ pub async fn exercise_post(
 
 pub async fn exercise_delete(
     State(state): State<AppState>,
-    Json(request): Json<ExercisePostDeleteRequest>,
+    Json(request): Json<ExerciseDeleteRequest>,
 ) -> StatusCode {
-    CRUDExercise::delete_by_group_and_timeslot_id(&state.db, request.timeslot_id, request.group_id)
-        .await
-        .unwrap();
+    CRUDExercise::delete_by_exercise_and_timeslot_id(
+        &state.db,
+        request.timeslot_id,
+        request.exercise_id,
+    )
+    .await
+    .unwrap();
 
     // TODO: Handle status code right
     StatusCode::OK
@@ -100,6 +104,7 @@ pub async fn exercise_put(
     Json(request): Json<ExercisePutRequest>,
 ) -> StatusCode {
     let update_model = exercise::ActiveModel {
+        group_id: active(request.group_id),
         set_type: active(request.set_type),
         note: active(request.note.map(Some)),
         ..Default::default()
