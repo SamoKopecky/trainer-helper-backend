@@ -20,7 +20,7 @@ use exercise::{
 };
 use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
-use timeslot::timeslot_post;
+use timeslot::timeslot_get;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use work_set::work_set_put;
 
@@ -42,14 +42,14 @@ impl Api {
 
         Router::new()
             .route("/liveness", get(liveness))
-            .route("/timeslot", post(timeslot_post))
+            .route("/timeslot", get(timeslot_get))
             .route("/workset", put(work_set_put))
             .route("/exercise/{timeslot_id}", get(exercis_get))
             .route("/exercise", put(exercise_put))
             .route("/exercise", post(exercise_post))
             .route("/exercise", delete(exercise_delete))
-            .route("/exercise-count", put(exercise_count_put))
-            .route("/exercise-count", delete(exercise_count_delete))
+            .route("/exercise/count", put(exercise_count_put))
+            .route("/exercise/count", delete(exercise_count_delete))
             // TODO: Fix cors later
             .layer(CorsLayer::permissive())
             .layer(TraceLayer::new_for_http())
