@@ -12,7 +12,7 @@ pub struct TimeslotGetQuery {
 pub struct TimeslotPostRequest {
     pub trainer_id: i32,
     pub start: NaiveDateTime,
-    pub duration: i32,
+    pub end: NaiveDateTime,
 }
 
 #[derive(Deserialize, Debug)]
