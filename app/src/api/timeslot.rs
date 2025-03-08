@@ -29,7 +29,7 @@ pub async fn timeslot_post(
     Json(
         CRUDTimeslot::insert_timeslot(
             &state.db,
-            timeslot::Entity::build(params.trainer_id, params.start, params.duration),
+            timeslot::Entity::build(params.trainer_id, params.start, params.end),
         )
         .await
         .unwrap(),

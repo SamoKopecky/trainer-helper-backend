@@ -17,7 +17,7 @@ impl MigrationTrait for Migration {
                     .col(pk_auto(Timeslot::Id))
                     .col(integer(Timeslot::TrainerId))
                     .col(date_time(Timeslot::Start))
-                    .col(integer(Timeslot::Duration))
+                    .col(date_time(Timeslot::End))
                     .col(date_time(Timeslot::CreatedAt))
                     .col(date_time(Timeslot::UpdatedAt))
                     .col(integer_null(Timeslot::UserId))
@@ -40,7 +40,7 @@ pub enum Timeslot {
     TrainerId,
     UserId,
     Start,
-    Duration,
+    End,
     UpdatedAt,
     CreatedAt,
 }
