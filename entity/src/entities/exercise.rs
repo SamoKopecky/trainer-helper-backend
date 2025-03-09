@@ -1,6 +1,8 @@
 use sea_orm::{entity::prelude::*, sqlx::types::chrono::Utc, Set};
 use serde::{Deserialize, Serialize};
 
+use super::timeslot::{self};
+
 #[derive(Debug, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize, Clone, Copy)]
 #[sea_orm(
     rs_type = "String",
@@ -32,12 +34,17 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     WorkSet,
+    Timeslot,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
             Self::WorkSet => Entity::has_many(super::work_set::Entity).into(),
+            Self::Timeslot => Entity::belongs_to(timeslot::Entity)
+                .from(Column::TimeslotId)
+                .to(timeslot::Column::Id)
+                .into(),
         }
     }
 }
@@ -45,6 +52,12 @@ impl RelationTrait for Relation {
 impl Related<super::work_set::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::WorkSet.def()
+    }
+}
+
+impl Related<super::timeslot::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Timeslot.def()
     }
 }
 

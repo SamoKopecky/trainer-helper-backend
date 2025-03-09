@@ -20,6 +20,7 @@ fn generate_sample_week() -> Vec<timeslot::ActiveModel> {
                 TRAINER_ID,
                 time + TimeDelta::days(i),
                 time + TimeDelta::days(i) + TimeDelta::hours(1),
+                "some name".to_string(),
             )
         })
         .collect()

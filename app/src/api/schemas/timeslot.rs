@@ -19,3 +19,11 @@ pub struct TimeslotPostRequest {
 pub struct TimeslotDeleteRequest {
     pub timeslot_id: i32,
 }
+
+#[derive(Deserialize, Debug)]
+#[serde(deny_unknown_fields)]
+pub struct TimeslotPutRequest {
+    pub id: i32,
+    pub user_id: Option<i32>,
+    pub name: Option<String>,
+}

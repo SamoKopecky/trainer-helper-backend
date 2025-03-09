@@ -20,7 +20,7 @@ use exercise::{
 };
 use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
-use timeslot::{timeslot_delete, timeslot_get, timeslot_post};
+use timeslot::{timeslot_delete, timeslot_get, timeslot_post, timeslot_put};
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use work_set::work_set_put;
 
@@ -45,6 +45,7 @@ impl Api {
             .route("/timeslot", get(timeslot_get))
             .route("/timeslot", post(timeslot_post))
             .route("/timeslot", delete(timeslot_delete))
+            .route("/timeslot", put(timeslot_put))
             .route("/workset", put(work_set_put))
             .route("/exercise/{timeslot_id}", get(exercis_get))
             .route("/exercise", put(exercise_put))

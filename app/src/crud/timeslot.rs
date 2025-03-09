@@ -1,5 +1,6 @@
+use chrono::Utc;
 use entity::timeslot;
-use sea_orm::entity::prelude::*;
+use sea_orm::{entity::prelude::*, Set};
 
 use super::ResultCRUD;
 
@@ -15,6 +16,13 @@ impl CRUDTimeslot {
             .filter(timeslot::Column::Start.between(start_date, end_date))
             .all(db_conn)
             .await
+    }
+
+    pub async fn get_by_id(db_conn: &DatabaseConnection, id: i32) -> ResultCRUD<timeslot::Model> {
+        Ok(timeslot::Entity::find_by_id(id)
+            .one(db_conn)
+            .await?
+            .unwrap())
     }
 
     pub async fn insert_timeslot(
@@ -38,5 +46,15 @@ impl CRUDTimeslot {
         } else {
             Err(DbErr::RecordNotFound("Timeslot not found".to_string()))
         }
+    }
+
+    pub async fn update_by_id(
+        db_conn: &DatabaseConnection,
+        id: i32,
+        mut data: timeslot::ActiveModel,
+    ) -> ResultCRUD<timeslot::Model> {
+        data.id = Set(id);
+        data.updated_at = Set(Utc::now().naive_local());
+        data.update(db_conn).await
     }
 }
