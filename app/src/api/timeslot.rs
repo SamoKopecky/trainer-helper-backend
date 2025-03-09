@@ -1,13 +1,17 @@
 use axum::{
     extract::{Query, State},
+    http::StatusCode,
     Json,
 };
 use entity::timeslot;
 
-use crate::crud::timeslot::CRUDTimeslot;
+use crate::{api::utils::active, crud::timeslot::CRUDTimeslot};
 
 use super::{
-    schemas::timeslot::{TimeslotDeleteRequest, TimeslotGetQuery, TimeslotPostRequest},
+    schemas::timeslot::{
+        TimeslotDeleteRequest, TimeslotGetQuery, TimeslotPostRequest, TimeslotPutRequest,
+    },
+    utils::{datetime_to_human_date, datetime_to_human_time},
     AppState,
 };
 
@@ -24,12 +28,23 @@ pub async fn timeslot_get(
 
 pub async fn timeslot_post(
     State(state): State<AppState>,
-    Json(params): Json<TimeslotPostRequest>,
+    Json(request): Json<TimeslotPostRequest>,
 ) -> Json<timeslot::Model> {
+    let timelost_name = format!(
+        "from {} to {} on {}",
+        datetime_to_human_time(request.start),
+        datetime_to_human_time(request.end),
+        datetime_to_human_date(request.start)
+    );
     Json(
         CRUDTimeslot::insert_timeslot(
             &state.db,
-            timeslot::Entity::build(params.trainer_id, params.start, params.end),
+            timeslot::Entity::build(
+                request.trainer_id,
+                request.start,
+                request.end,
+                timelost_name,
+            ),
         )
         .await
         .unwrap(),
@@ -38,11 +53,28 @@ pub async fn timeslot_post(
 
 pub async fn timeslot_delete(
     State(state): State<AppState>,
-    Json(params): Json<TimeslotDeleteRequest>,
+    Json(request): Json<TimeslotDeleteRequest>,
 ) -> Json<timeslot::Model> {
     Json(
-        CRUDTimeslot::delete_timeslot(&state.db, params.timeslot_id)
+        CRUDTimeslot::delete_timeslot(&state.db, request.timeslot_id)
             .await
             .unwrap(),
     )
+}
+
+pub async fn timeslot_put(
+    State(state): State<AppState>,
+    Json(request): Json<TimeslotPutRequest>,
+) -> StatusCode {
+    let update_model = timeslot::ActiveModel {
+        name: active(request.name),
+        user_id: active(request.user_id.map(Some)),
+        ..Default::default()
+    };
+
+    CRUDTimeslot::update_by_id(&state.db, request.id, update_model)
+        .await
+        .unwrap();
+
+    StatusCode::OK
 }

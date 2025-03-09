@@ -1,6 +1,6 @@
 use sea_orm_migration::{
     prelude::*,
-    schema::{date_time, integer, integer_null, pk_auto},
+    schema::{date_time, integer, integer_null, pk_auto, string},
 };
 
 #[derive(DeriveMigrationName)]
@@ -16,6 +16,7 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(pk_auto(Timeslot::Id))
                     .col(integer(Timeslot::TrainerId))
+                    .col(string(Timeslot::Name))
                     .col(date_time(Timeslot::Start))
                     .col(date_time(Timeslot::End))
                     .col(date_time(Timeslot::CreatedAt))
@@ -39,6 +40,7 @@ pub enum Timeslot {
     Id,
     TrainerId,
     UserId,
+    Name,
     Start,
     End,
     UpdatedAt,

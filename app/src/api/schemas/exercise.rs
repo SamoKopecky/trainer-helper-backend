@@ -24,6 +24,13 @@ pub struct ExerciseResponse {
     pub work_sets: Vec<ExerciseWorkSet>,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FullExerciseResponse {
+    pub name: String,
+    pub user_id: Option<i32>,
+    pub exercises: Vec<ExerciseResponse>,
+}
+
 #[derive(Deserialize, Debug)]
 pub struct ExerciseCountPutRequest {
     pub id: i32,
@@ -82,7 +89,6 @@ impl ExerciseResponse {
             work_sets: vec![ExerciseWorkSet::from_crud_model(model)],
         }
     }
-
     pub fn from_crud_models(work_set: &work_set::Model, exercise: &exercise::Model) -> Self {
         ExerciseResponse {
             set_type: exercise.set_type,

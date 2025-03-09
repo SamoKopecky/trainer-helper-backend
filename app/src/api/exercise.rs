@@ -11,12 +11,13 @@ use entity::{
 };
 use sea_orm::{ActiveValue::NotSet, IntoActiveModel};
 
-use crate::crud::{exercise::CRUDExercise, work_set::CRUDWorkSet};
+use crate::crud::{exercise::CRUDExercise, timeslot::CRUDTimeslot, work_set::CRUDWorkSet};
 
 use super::{
     schemas::exercise::{
         ExerciseCountDeleteRequest, ExerciseCountPutRequest, ExerciseDeleteRequest,
         ExercisePostRequest, ExercisePutRequest, ExerciseResponse, ExerciseWorkSet,
+        FullExerciseResponse,
     },
     utils::{active, handle_crud_result},
     AppState,
@@ -25,7 +26,7 @@ use super::{
 pub async fn exercis_get(
     State(state): State<AppState>,
     Path(timeslot_id): Path<i32>,
-) -> Json<Vec<ExerciseResponse>> {
+) -> Json<FullExerciseResponse> {
     let mut res: HashMap<i32, ExerciseResponse> = HashMap::new();
     let exercises = CRUDExercise::get_by_timeslot_id(&state.db, timeslot_id)
         .await
@@ -41,14 +42,22 @@ pub async fn exercis_get(
             .or_insert(ExerciseResponse::from_crud_model(exercise));
     });
 
-    let mut res_values: Vec<ExerciseResponse> = res.into_values().collect();
-    res_values.iter_mut().for_each(|exercise| {
+    let mut res_exercises: Vec<ExerciseResponse> = res.into_values().collect();
+    res_exercises.iter_mut().for_each(|exercise| {
         exercise
             .work_sets
             .sort_by_key(|work_set| work_set.work_set_id)
     });
-    res_values.sort_by_key(|exercise| (exercise.group_id, exercise.exercise_id));
-    Json(res_values)
+    res_exercises.sort_by_key(|exercise| (exercise.group_id, exercise.exercise_id));
+
+    let res_timeslot = CRUDTimeslot::get_by_id(&state.db, timeslot_id)
+        .await
+        .unwrap();
+    Json(FullExerciseResponse {
+        name: res_timeslot.name,
+        user_id: res_timeslot.user_id,
+        exercises: res_exercises,
+    })
 }
 
 pub async fn exercise_post(
