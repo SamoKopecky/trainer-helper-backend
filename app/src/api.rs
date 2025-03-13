@@ -1,4 +1,5 @@
 pub mod exercise;
+pub mod person;
 pub mod timeslot;
 pub mod utils;
 pub mod work_set;
@@ -18,6 +19,7 @@ use exercise::{
     exercis_get, exercise_count_delete, exercise_count_put, exercise_delete, exercise_post,
     exercise_put,
 };
+use person::get_person;
 use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
 use timeslot::{timeslot_delete, timeslot_get, timeslot_post, timeslot_put};
@@ -53,6 +55,7 @@ impl Api {
             .route("/exercise", delete(exercise_delete))
             .route("/exercise/count", put(exercise_count_put))
             .route("/exercise/count", delete(exercise_count_delete))
+            .route("/person", get(get_person))
             // TODO: Fix cors later
             .layer(CorsLayer::permissive())
             .layer(TraceLayer::new_for_http())

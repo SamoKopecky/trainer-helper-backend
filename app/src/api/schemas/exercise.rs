@@ -1,6 +1,6 @@
 use entity::{
     exercise::{self, SetType},
-    work_set,
+    timeslot, work_set,
 };
 use serde::{Deserialize, Serialize};
 
@@ -26,8 +26,7 @@ pub struct ExerciseResponse {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct FullExerciseResponse {
-    pub name: String,
-    pub user_id: Option<i32>,
+    pub timeslot: timeslot::Model,
     pub exercises: Vec<ExerciseResponse>,
 }
 

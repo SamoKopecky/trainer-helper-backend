@@ -54,8 +54,7 @@ pub async fn exercis_get(
         .await
         .unwrap();
     Json(FullExerciseResponse {
-        name: res_timeslot.name,
-        user_id: res_timeslot.user_id,
+        timeslot: res_timeslot,
         exercises: res_exercises,
     })
 }

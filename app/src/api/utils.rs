@@ -25,9 +25,9 @@ pub fn handle_crud_result<T>(result: ResultCRUD<T>) -> StatusCode {
 }
 
 pub fn datetime_to_human_date(date: NaiveDateTime) -> String {
-    date.format("%d-%m-%Y").to_string()
+    date.format("%d-%m").to_string()
 }
 
 pub fn datetime_to_human_time(date: NaiveDateTime) -> String {
-    date.format("%H:%M:%S").to_string()
+    date.format("%H:%M").to_string()
 }
