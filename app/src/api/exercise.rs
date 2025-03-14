@@ -14,10 +14,13 @@ use sea_orm::{ActiveValue::NotSet, IntoActiveModel};
 use crate::crud::{exercise::CRUDExercise, timeslot::CRUDTimeslot, work_set::CRUDWorkSet};
 
 use super::{
-    schemas::exercise::{
-        ExerciseCountDeleteRequest, ExerciseCountPutRequest, ExerciseDeleteRequest,
-        ExercisePostRequest, ExercisePutRequest, ExerciseResponse, ExerciseWorkSet,
-        FullExerciseResponse,
+    schemas::{
+        exercise::{
+            ExerciseCountDeleteRequest, ExerciseCountPutRequest, ExerciseDeleteRequest,
+            ExercisePostRequest, ExercisePutRequest, ExerciseResponse, ExerciseWorkSet,
+            FullExerciseResponse,
+        },
+        timeslot::ApiTimeslot,
     },
     utils::{active, handle_crud_result},
     AppState,
@@ -54,7 +57,7 @@ pub async fn exercis_get(
         .await
         .unwrap();
     Json(FullExerciseResponse {
-        timeslot: res_timeslot,
+        timeslot: ApiTimeslot::from_timeslot(&state.db, res_timeslot).await,
         exercises: res_exercises,
     })
 }

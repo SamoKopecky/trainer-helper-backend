@@ -62,7 +62,7 @@ fn generate_sample_users() -> Vec<person::ActiveModel> {
     let names = Vec::from([
         ("Samuel Kopecky", "sano.kopecky@gmail.com"),
         ("Jozko Mrkvicka", "jozko.mrkvicka@gmail.com"),
-        ("Igi Maiga", "igi.maiga@gmail.com"),
+        ("Ibi Maiga", "ibi.maiga@gmail.com"),
         ("Peter Turbo", "peter.turbo@gmail.com"),
     ]);
 

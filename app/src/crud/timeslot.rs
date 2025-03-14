@@ -1,8 +1,8 @@
 use chrono::Utc;
-use entity::timeslot;
+use entity::{person, timeslot};
 use sea_orm::{entity::prelude::*, Set};
 
-use super::ResultCRUD;
+use super::{models::timeslot::PersonTimeslot, ResultCRUD};
 
 pub struct CRUDTimeslot;
 
@@ -11,11 +11,29 @@ impl CRUDTimeslot {
         db_conn: &DatabaseConnection,
         start_date: DateTime,
         end_date: DateTime,
-    ) -> ResultCRUD<Vec<timeslot::Model>> {
-        timeslot::Entity::find()
+    ) -> ResultCRUD<Vec<PersonTimeslot>> {
+        let res = timeslot::Entity::find()
             .filter(timeslot::Column::Start.between(start_date, end_date))
+            .find_also_related(person::Entity)
             .all(db_conn)
-            .await
+            .await?;
+
+        Ok(res
+            .into_iter()
+            .map(|(timeslot, maybe_person)| {
+                if let Some(person) = maybe_person {
+                    PersonTimeslot {
+                        timeslot,
+                        person_name: Some(person.name),
+                    }
+                } else {
+                    PersonTimeslot {
+                        timeslot,
+                        person_name: None,
+                    }
+                }
+            })
+            .collect())
     }
 
     pub async fn get_by_id(db_conn: &DatabaseConnection, id: i32) -> ResultCRUD<timeslot::Model> {

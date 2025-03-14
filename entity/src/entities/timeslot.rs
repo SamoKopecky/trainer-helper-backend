@@ -1,7 +1,10 @@
 use sea_orm::{entity::prelude::*, sqlx::types::chrono::Utc, Set};
 use serde::{Deserialize, Serialize};
 
-use super::exercise;
+use super::{
+    exercise::{self},
+    person,
+};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "timeslot")]
@@ -22,12 +25,14 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     Exercise,
+    Person,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
             Self::Exercise => Entity::has_many(exercise::Entity).into(),
+            Self::Person => Entity::has_one(person::Entity).into(),
         }
     }
 }
@@ -35,6 +40,12 @@ impl RelationTrait for Relation {
 impl Related<super::exercise::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Exercise.def()
+    }
+}
+
+impl Related<super::person::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Person.def()
     }
 }
 

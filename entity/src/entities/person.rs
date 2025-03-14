@@ -2,6 +2,8 @@ use sea_orm::prelude::*;
 use sea_orm::{sqlx::types::chrono::Utc, Set};
 use serde::{Deserialize, Serialize};
 
+use super::timeslot;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "person")]
 pub struct Model {
@@ -15,9 +17,27 @@ pub struct Model {
     pub updated_at: DateTime,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+#[derive(Copy, Clone, Debug, EnumIter)]
+pub enum Relation {
+    Timeslot,
+}
 
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Self::Timeslot => Entity::belongs_to(timeslot::Entity)
+                .from(Column::Id)
+                .to(timeslot::Column::UserId)
+                .into(),
+        }
+    }
+}
+
+impl Related<super::timeslot::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Timeslot.def()
+    }
+}
 impl ActiveModelBehavior for ActiveModel {}
 
 impl Entity {

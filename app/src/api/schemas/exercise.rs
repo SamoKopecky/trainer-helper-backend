@@ -1,10 +1,12 @@
 use entity::{
     exercise::{self, SetType},
-    timeslot, work_set,
+    work_set,
 };
 use serde::{Deserialize, Serialize};
 
 use crate::crud::models::exercise::ExerciseWorkSetModel;
+
+use super::timeslot::ApiTimeslot;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExerciseWorkSet {
@@ -26,7 +28,7 @@ pub struct ExerciseResponse {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct FullExerciseResponse {
-    pub timeslot: timeslot::Model,
+    pub timeslot: ApiTimeslot,
     pub exercises: Vec<ExerciseResponse>,
 }
 
