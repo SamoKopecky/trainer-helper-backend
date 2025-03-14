@@ -1,4 +1,4 @@
-use sea_orm::{entity::prelude::*, sqlx::types::chrono::Utc, Set};
+use sea_orm::{entity::prelude::*, sqlx::types::chrono::Utc, ActiveValue::NotSet, Set};
 use serde::{Deserialize, Serialize};
 
 use super::timeslot::{self};
@@ -81,5 +81,15 @@ impl Entity {
             updated_at: Set(naive_now),
             ..Default::default()
         }
+    }
+
+    pub fn to_new(model: Model) -> ActiveModel {
+        let mut active: ActiveModel = model.into();
+        let naive_now = Utc::now().naive_local();
+
+        active.id = NotSet;
+        active.updated_at = Set(naive_now);
+        active.created_at = Set(naive_now);
+        active
     }
 }

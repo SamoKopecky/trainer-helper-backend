@@ -1,4 +1,5 @@
 use sea_orm::prelude::*;
+use sea_orm::ActiveValue::NotSet;
 use sea_orm::{sqlx::types::chrono::Utc, Set};
 use serde::{Deserialize, Serialize};
 
@@ -56,5 +57,15 @@ impl Entity {
             updated_at: Set(naive_now),
             ..Default::default()
         }
+    }
+
+    pub fn to_new(model: Model) -> ActiveModel {
+        let mut active: ActiveModel = model.into();
+        let naive_now = Utc::now().naive_local();
+
+        active.id = NotSet;
+        active.updated_at = Set(naive_now);
+        active.created_at = Set(naive_now);
+        active
     }
 }

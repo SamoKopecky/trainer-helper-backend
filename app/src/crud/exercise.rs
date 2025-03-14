@@ -16,7 +16,27 @@ impl CRUDExercise {
         model.insert(db_conn).await
     }
 
+    pub async fn create_many(
+        db_conn: &DatabaseConnection,
+        models: Vec<exercise::ActiveModel>,
+    ) -> ResultCRUD<Vec<exercise::Model>> {
+        exercise::Entity::insert_many(models)
+            .exec_with_returning_many(db_conn)
+            .await
+    }
+
     pub async fn get_by_timeslot_id(
+        db_conn: &DatabaseConnection,
+        timeslot_id: i32,
+    ) -> ResultCRUD<Vec<(exercise::Model, Vec<work_set::Model>)>> {
+        exercise::Entity::find()
+            .filter(exercise::Column::TimeslotId.eq(timeslot_id))
+            .find_with_related(work_set::Entity)
+            .all(db_conn)
+            .await
+    }
+
+    pub async fn get_by_timeslot_id_exercise_work_sets(
         db_conn: &DatabaseConnection,
         timeslot_id: i32,
     ) -> ResultCRUD<Vec<ExerciseWorkSetModel>> {
@@ -46,6 +66,19 @@ impl CRUDExercise {
         data.id = Set(id);
         data.updated_at = Set(Utc::now().naive_local());
         data.update(db_conn).await
+    }
+
+    pub async fn delete_by_timeslot_id(
+        db_conn: &DatabaseConnection,
+        timeslot_id: i32,
+    ) -> ResultCRUD<()> {
+        exercise::Entity::delete_many()
+            .filter(exercise::Column::TimeslotId.eq(timeslot_id))
+            .exec(db_conn)
+            .await?;
+        // TODO: Delete work sets also
+
+        Ok(())
     }
 
     pub async fn delete_by_exercise_and_timeslot_id(

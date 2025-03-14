@@ -1,9 +1,6 @@
 use chrono::Utc;
 use entity::prelude::*;
 use entity::work_set;
-use sea_orm::Order;
-use sea_orm::QueryOrder;
-use sea_orm::QuerySelect;
 use sea_orm::{entity::prelude::*, Set};
 
 use super::ResultCRUD;
@@ -28,27 +25,6 @@ impl CRUDWorkSet {
         data.id = Set(id);
         data.updated_at = Set(Utc::now().naive_local());
         data.update(db_conn).await
-    }
-
-    fn get_ordered_by_exercise_id_query(exercise_id: i32) -> Select<work_set::Entity> {
-        work_set::Entity::find()
-            .filter(work_set::Column::ExerciseId.eq(exercise_id))
-            // TODO: sort properly
-            .order_by(work_set::Column::Id, Order::Asc)
-    }
-
-    pub async fn get_many_ordered_ids(
-        db_conn: &DatabaseConnection,
-        exercise_id: i32,
-        limit: u64,
-    ) -> ResultCRUD<Vec<i32>> {
-        Self::get_ordered_by_exercise_id_query(exercise_id)
-            .limit(limit)
-            .select_only()
-            .column(work_set::Column::Id)
-            .into_tuple()
-            .all(db_conn)
-            .await
     }
 
     pub async fn delete_many_by_ids(

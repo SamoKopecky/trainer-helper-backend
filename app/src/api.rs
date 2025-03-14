@@ -16,8 +16,8 @@ use axum::{
     Json, Router,
 };
 use exercise::{
-    exercis_get, exercise_count_delete, exercise_count_put, exercise_delete, exercise_post,
-    exercise_put,
+    exercis_get, exercise_count_delete, exercise_count_put, exercise_delete, exercise_duplicate,
+    exercise_post, exercise_put,
 };
 use person::get_person;
 use sea_orm::DatabaseConnection;
@@ -55,6 +55,7 @@ impl Api {
             .route("/exercise", delete(exercise_delete))
             .route("/exercise/count", put(exercise_count_put))
             .route("/exercise/count", delete(exercise_count_delete))
+            .route("/exercise/duplicate", post(exercise_duplicate))
             .route("/person", get(get_person))
             // TODO: Fix cors later
             .layer(CorsLayer::permissive())
