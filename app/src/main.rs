@@ -17,12 +17,13 @@ async fn main() {
         .arg(arg!(-s --seed "Seed db").required(false))
         .get_matches();
 
+    let db = Db::build().await.unwrap();
+    let _ = Migrator::up(&db.pool, None).await;
+
     match matches.get_one::<bool>("seed") {
         Some(seed) if *seed == true => insert_seeds().await,
         _ => {}
     }
-    let db = Db::build().await.unwrap();
-    let _ = Migrator::up(&db.pool, None).await;
 
     let app = Api::build().await;
     let listener = tokio::net::TcpListener::bind("0.0.0.0:2001").await.unwrap();

@@ -1,4 +1,5 @@
 use axum::http::StatusCode;
+use chrono::NaiveDateTime;
 use sea_orm::{
     ActiveValue::{self, NotSet},
     DbErr, Set,
@@ -21,4 +22,12 @@ pub fn handle_crud_result<T>(result: ResultCRUD<T>) -> StatusCode {
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         },
     }
+}
+
+pub fn datetime_to_human_date(date: NaiveDateTime) -> String {
+    date.format("%d-%m").to_string()
+}
+
+pub fn datetime_to_human_time(date: NaiveDateTime) -> String {
+    date.format("%H:%M").to_string()
 }

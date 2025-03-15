@@ -2,6 +2,7 @@ use chrono::TimeDelta;
 use chrono::Utc;
 use entity::exercise;
 use entity::exercise::SetType;
+use entity::person;
 use entity::prelude::*;
 use entity::timeslot;
 use entity::work_set;
@@ -20,6 +21,7 @@ fn generate_sample_week() -> Vec<timeslot::ActiveModel> {
                 TRAINER_ID,
                 time + TimeDelta::days(i),
                 time + TimeDelta::days(i) + TimeDelta::hours(1),
+                "some name".to_string(),
             )
         })
         .collect()
@@ -56,6 +58,20 @@ fn data_to_models(data: Vec<(i32, &str)>, exercise_id: i32) -> Vec<work_set::Act
         .collect()
 }
 
+fn generate_sample_users() -> Vec<person::ActiveModel> {
+    let names = Vec::from([
+        ("Samuel Kopecky", "sano.kopecky@gmail.com"),
+        ("Jozko Mrkvicka", "jozko.mrkvicka@gmail.com"),
+        ("Ibi Maiga", "ibi.maiga@gmail.com"),
+        ("Peter Turbo", "peter.turbo@gmail.com"),
+    ]);
+
+    names
+        .iter()
+        .map(|name| Person::build(name.0.to_string(), name.1.to_string()))
+        .collect()
+}
+
 pub async fn insert_seeds() {
     let db = Db::build().await.unwrap();
     let timeslots = generate_sample_week();
@@ -79,4 +95,11 @@ pub async fn insert_seeds() {
         .await
         .unwrap();
     println!("Inserted {} sets", res.len());
+
+    let users = generate_sample_users();
+    let res = Person::insert_many(users)
+        .exec_with_returning_many(&db.pool)
+        .await
+        .unwrap();
+    println!("Inserted {} users", res.len());
 }

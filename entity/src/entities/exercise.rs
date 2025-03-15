@@ -1,5 +1,7 @@
-use sea_orm::{entity::prelude::*, sqlx::types::chrono::Utc, Set};
+use sea_orm::{entity::prelude::*, sqlx::types::chrono::Utc, ActiveValue::NotSet, Set};
 use serde::{Deserialize, Serialize};
+
+use super::timeslot::{self};
 
 #[derive(Debug, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize, Clone, Copy)]
 #[sea_orm(
@@ -32,12 +34,17 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     WorkSet,
+    Timeslot,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
             Self::WorkSet => Entity::has_many(super::work_set::Entity).into(),
+            Self::Timeslot => Entity::belongs_to(timeslot::Entity)
+                .from(Column::TimeslotId)
+                .to(timeslot::Column::Id)
+                .into(),
         }
     }
 }
@@ -45,6 +52,12 @@ impl RelationTrait for Relation {
 impl Related<super::work_set::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::WorkSet.def()
+    }
+}
+
+impl Related<super::timeslot::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Timeslot.def()
     }
 }
 
@@ -68,5 +81,15 @@ impl Entity {
             updated_at: Set(naive_now),
             ..Default::default()
         }
+    }
+
+    pub fn to_new(model: Model) -> ActiveModel {
+        let mut active: ActiveModel = model.into();
+        let naive_now = Utc::now().naive_local();
+
+        active.id = NotSet;
+        active.updated_at = Set(naive_now);
+        active.created_at = Set(naive_now);
+        active
     }
 }

@@ -1,4 +1,5 @@
 pub mod exercise;
+pub mod person;
 pub mod timeslot;
 pub mod utils;
 pub mod work_set;
@@ -15,12 +16,13 @@ use axum::{
     Json, Router,
 };
 use exercise::{
-    exercis_get, exercise_count_delete, exercise_count_put, exercise_delete, exercise_post,
-    exercise_put,
+    exercis_get, exercise_count_delete, exercise_count_put, exercise_delete, exercise_duplicate,
+    exercise_post, exercise_put,
 };
+use person::get_person;
 use sea_orm::DatabaseConnection;
 use serde_json::{json, Value};
-use timeslot::{timeslot_delete, timeslot_get, timeslot_post};
+use timeslot::{timeslot_delete, timeslot_get, timeslot_post, timeslot_put};
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use work_set::work_set_put;
 
@@ -45,6 +47,7 @@ impl Api {
             .route("/timeslot", get(timeslot_get))
             .route("/timeslot", post(timeslot_post))
             .route("/timeslot", delete(timeslot_delete))
+            .route("/timeslot", put(timeslot_put))
             .route("/workset", put(work_set_put))
             .route("/exercise/{timeslot_id}", get(exercis_get))
             .route("/exercise", put(exercise_put))
@@ -52,6 +55,8 @@ impl Api {
             .route("/exercise", delete(exercise_delete))
             .route("/exercise/count", put(exercise_count_put))
             .route("/exercise/count", delete(exercise_count_delete))
+            .route("/exercise/duplicate", post(exercise_duplicate))
+            .route("/person", get(get_person))
             // TODO: Fix cors later
             .layer(CorsLayer::permissive())
             .layer(TraceLayer::new_for_http())

@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::crud::models::exercise::ExerciseWorkSetModel;
 
+use super::timeslot::ApiTimeslot;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExerciseWorkSet {
     pub work_set_id: i32,
@@ -22,6 +24,12 @@ pub struct ExerciseResponse {
     pub set_type: SetType,
     pub note: Option<String>,
     pub work_sets: Vec<ExerciseWorkSet>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FullExerciseResponse {
+    pub timeslot: ApiTimeslot,
+    pub exercises: Vec<ExerciseResponse>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -57,8 +65,14 @@ pub struct ExercisePostRequest {
     pub group_id: i32,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct ExerciseDuplicatePostRequest {
+    pub copy_timeslot_id: i32,
+    pub timeslot_id: i32,
+}
+
 impl ExerciseWorkSet {
-    pub fn from_crud_model(model: &ExerciseWorkSetModel) -> Self {
+    pub fn from_big_crud_model(model: &ExerciseWorkSetModel) -> Self {
         ExerciseWorkSet {
             work_set_id: model.work_set_id,
             reps: model.reps,
@@ -66,24 +80,48 @@ impl ExerciseWorkSet {
             rpe: model.rpe,
         }
     }
+
+    pub fn from_crud_model(work_set: work_set::Model) -> Self {
+        ExerciseWorkSet {
+            work_set_id: work_set.id,
+            reps: work_set.reps,
+            intensity: work_set.intensity.clone(),
+            rpe: work_set.rpe,
+        }
+    }
+
     pub fn to_active_model(self, exercise_id: i32) -> work_set::ActiveModel {
         work_set::Entity::build(self.reps, self.intensity, exercise_id, self.rpe)
     }
 }
 
 impl ExerciseResponse {
-    pub fn from_crud_model(model: &ExerciseWorkSetModel) -> Self {
+    pub fn from_big_crud_model(model: &ExerciseWorkSetModel) -> Self {
         ExerciseResponse {
             exercise_id: model.exercise_id,
             group_id: model.group_id,
             note: model.note.clone(),
             set_type: model.set_type,
             work_set_count: 1,
-            work_sets: vec![ExerciseWorkSet::from_crud_model(model)],
+            work_sets: vec![ExerciseWorkSet::from_big_crud_model(model)],
         }
     }
 
-    pub fn from_crud_models(work_set: &work_set::Model, exercise: &exercise::Model) -> Self {
+    pub fn from_crud_models(exercise: exercise::Model, work_sets: Vec<work_set::Model>) -> Self {
+        Self {
+            set_type: exercise.set_type,
+            group_id: exercise.group_id,
+            note: exercise.note.clone(),
+            exercise_id: exercise.id,
+            work_set_count: work_sets.len() as i32,
+            work_sets: work_sets
+                .into_iter()
+                .map(|ws| ExerciseWorkSet::from_crud_model(ws))
+                .collect(),
+        }
+    }
+
+    pub fn from_tuple_crud_models(work_set: &work_set::Model, exercise: &exercise::Model) -> Self {
         ExerciseResponse {
             set_type: exercise.set_type,
             group_id: exercise.group_id,
