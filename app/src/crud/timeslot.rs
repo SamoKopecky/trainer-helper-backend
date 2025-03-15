@@ -1,6 +1,6 @@
 use chrono::Utc;
 use entity::{person, timeslot};
-use sea_orm::{entity::prelude::*, Set};
+use sea_orm::{entity::prelude::*, QueryOrder, Set};
 
 use super::{models::timeslot::PersonTimeslot, ResultCRUD};
 
@@ -15,6 +15,7 @@ impl CRUDTimeslot {
         let res = timeslot::Entity::find()
             .filter(timeslot::Column::Start.between(start_date, end_date))
             .find_also_related(person::Entity)
+            .order_by_desc(timeslot::Column::Start)
             .all(db_conn)
             .await?;
 
