@@ -66,6 +66,8 @@ pub async fn timeslot_put(
     Json(request): Json<TimeslotPutRequest>,
 ) -> StatusCode {
     let update_model = timeslot::ActiveModel {
+        start: active(request.start),
+        end: active(request.end),
         name: active(request.name),
         user_id: active(request.user_id.map(Some)),
         ..Default::default()

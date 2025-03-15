@@ -30,6 +30,8 @@ pub struct TimeslotPutRequest {
     pub id: i32,
     pub user_id: Option<i32>,
     pub name: Option<String>,
+    pub start: Option<NaiveDateTime>,
+    pub end: Option<NaiveDateTime>,
 }
 
 #[derive(Deserialize, Debug, Serialize)]
